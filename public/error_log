@@ -1,0 +1,28 @@
+[26-Oct-2022 12:39:44 Europe/Paris] PHP Fatal error:  Uncaught Error: Class 'App\Overrides\Router' not found in /home/c1983793c/public_html/express-courrier-backend/bootstrap/app.php:45
+Stack trace:
+#0 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): {closure}(Object(Illuminate\Foundation\Application), Array)
+#1 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Container/Container.php(691): Illuminate\Container\Container->build(Object(Closure))
+#2 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(796): Illuminate\Container\Container->resolve('router', Array, true)
+#3 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Container/Container.php(637): Illuminate\Foundation\Application->resolve('router', Array)
+#4 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(781): Illum in /home/c1983793c/public_html/express-courrier-backend/bootstrap/app.php on line 45
+[26-Oct-2022 12:39:55 Europe/Paris] PHP Fatal error:  Uncaught Error: Class 'App\Overrides\Router' not found in /home/c1983793c/public_html/express-courrier-backend/bootstrap/app.php:45
+Stack trace:
+#0 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): {closure}(Object(Illuminate\Foundation\Application), Array)
+#1 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Container/Container.php(691): Illuminate\Container\Container->build(Object(Closure))
+#2 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(796): Illuminate\Container\Container->resolve('router', Array, true)
+#3 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Container/Container.php(637): Illuminate\Foundation\Application->resolve('router', Array)
+#4 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(781): Illum in /home/c1983793c/public_html/express-courrier-backend/bootstrap/app.php on line 45
+[26-Oct-2022 12:53:47 Europe/Paris] PHP Fatal error:  Uncaught Error: Class 'App\Overrides\Router' not found in /home/c1983793c/public_html/express-courrier-backend/bootstrap/app.php:45
+Stack trace:
+#0 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): {closure}(Object(Illuminate\Foundation\Application), Array)
+#1 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Container/Container.php(691): Illuminate\Container\Container->build(Object(Closure))
+#2 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(796): Illuminate\Container\Container->resolve('router', Array, true)
+#3 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Container/Container.php(637): Illuminate\Foundation\Application->resolve('router', Array)
+#4 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(781): Illum in /home/c1983793c/public_html/express-courrier-backend/bootstrap/app.php on line 45
+[26-Oct-2022 13:06:57 Europe/Paris] PHP Fatal error:  Uncaught Error: Class 'App\Overrides\Router' not found in /home/c1983793c/public_html/express-courrier-backend/bootstrap/app.php:45
+Stack trace:
+#0 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Container/Container.php(805): {closure}(Object(Illuminate\Foundation\Application), Array)
+#1 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Container/Container.php(691): Illuminate\Container\Container->build(Object(Closure))
+#2 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(796): Illuminate\Container\Container->resolve('router', Array, true)
+#3 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Container/Container.php(637): Illuminate\Foundation\Application->resolve('router', Array)
+#4 /home/c1983793c/public_html/express-courrier-backend/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(781): Illum in /home/c1983793c/public_html/express-courrier-backend/bootstrap/app.php on line 45
