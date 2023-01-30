@@ -60,6 +60,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('structures/{structure}/roles/all', [RoleController::class, 'getAllByStructure']);
         Route::get('roles/{role}/users', [InscriptionController::class, 'getByRole']);
         Route::post('users/roles', [RoleUserController::class, 'store']);
+        Route::get('users/all', [InscriptionController::class, 'all']);
+        Route::get('roles/all', [RoleController::class, 'all']);
 
         Route::apiResource('roles', "Authorization\RoleController")->middleware(['ability:ADMIN:ADMIN,ADMIN:ADMIN']);
 
@@ -111,6 +113,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::customResource('courrier-etapes', 'Courrier\CrCourrierEtapeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('courrier-sortants', 'Courrier\CrCourrierSortantController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('destinataires', 'Courrier\CrDestinataireController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
+        Route::customResource('domaines', 'Courrier\CrDomaineController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('etapes', 'Courrier\CrEtapeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('dossiers', 'Courrier\CrDossierController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         // Route::customResource('fichiers', 'Courrier\CrFichierController',['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
@@ -120,6 +123,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::customResource('natures', 'Courrier\CrNatureController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('provenances', 'Courrier\CrProvenanceController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('reaffectations', 'Courrier\CrReaffectationController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
+        Route::customResource('service-defaults', 'Courrier\CrServiceDefaultController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('statuts', 'Courrier\CrStatutController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('structure-copies', 'Courrier\CrStructureCopieController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('suivis', 'Courrier\CrSuiviController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
@@ -186,6 +190,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::customResource('courrier-etapes', 'Courrier\CrCourrierEtapeController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         Route::customResource('courrier-sortants', 'Courrier\CrCourrierSortantController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         Route::customResource('destinataires', 'Courrier\CrDestinataireController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
+        Route::customResource('domaines', 'Courrier\CrDomaineController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         Route::customResource('etapes', 'Courrier\CrEtapeController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         Route::customResource('dossiers', 'Courrier\CrDossierController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         // Route::customResource('fichiers', 'Courrier\CrFichierController',['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
@@ -195,6 +200,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::customResource('natures', 'Courrier\CrNatureController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         Route::customResource('provenances', 'Courrier\CrProvenanceController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         Route::customResource('reaffectations', 'Courrier\CrReaffectationController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
+        Route::customResource('service-defaults', 'Courrier\CrServiceDefaultController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         Route::customResource('statuts', 'Courrier\CrStatutController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         Route::customResource('structure-copies', 'Courrier\CrStructureCopieController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         Route::customResource('suivis', 'Courrier\CrSuiviController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
@@ -228,6 +234,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('employes/{employe}/validate', [EmployeController::class, 'validateEmploye']);
         Route::put('employes/{employe}', [EmployeController::class, 'update']);
         Route::post('employes', [EmployeController::class, 'store']);
+        Route::get('employes', [EmployeController::class, 'all']);
     });
 
     Route::get('structures/{structure}/employes', [EmployeController::class, 'getByStructure']);

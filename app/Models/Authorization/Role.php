@@ -31,7 +31,8 @@ class Role extends Model
     protected $table = 'roles';
 
     protected $casts = [
-        'inscription' => 'int'
+        'inscription' => 'int',
+        'default' => 'int'
     ];
 
     protected $fillable = [

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Authorization;
 
+use App\ApiRequest\ApiRequest;
 use App\Services\Authorization\RoleService;
 use App\Shared\Controllers\BaseController;
 use Illuminate\Http\Request;
@@ -22,6 +23,10 @@ class RoleController extends BaseController
         parent::__construct($this->validation, $service);
     }
 
+    public function all(ApiRequest $request)
+    {
+        return $this->service->list($request);
+    }
 
     public function getByStructure($structure)
     {

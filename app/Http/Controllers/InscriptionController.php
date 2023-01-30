@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ApiRequest\ApiRequest;
 use App\Models\Structure\Inscription;
 use App\Services\InscriptionService;
 use App\Shared\Controllers\BaseController;
@@ -27,9 +28,10 @@ class InscriptionController extends BaseController
     // }
 
 
-
-
-
+    public function all(ApiRequest $request)
+    {
+        return $this->service->all($request);
+    }
 
     public function getByRole($role)
     {

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\ApiRequest\ApiRequest;
 use App\Models\Structure\Inscription;
 use App\Services\BaseService;
 use Exception;
@@ -17,6 +18,13 @@ class InscriptionService extends BaseService
     {
         parent::__construct($model);
     }
+
+
+    public function all(ApiRequest $request)
+    {
+        return $this->model::with(['affectation_structure.structure', 'affectation_structure.fonction', 'affectation_structure.poste'])->consume($request);
+    }
+
 
     public function validate(Request $request)
     {
@@ -73,6 +81,10 @@ class InscriptionService extends BaseService
         return $this->model::with(['affectation_structure.structure', 'affectation_structure.fonction', 'affectation_structure.poste'])->findOrFail($id);
     }
 
+    public function getAutresStructures(Request $request)
+    {
+        return $this->model::consume($request);
+    }
 
 
     // TODO delete image on update

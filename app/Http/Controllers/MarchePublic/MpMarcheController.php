@@ -10,6 +10,7 @@ use App\Models\MarchePublic\MpMarche;
 use App\Models\MarchePublic\MpMarcheEtape;
 use App\Models\MarchePublic\MpTypeProcedure;
 use App\Models\MarchePublic\MpTypeProcedureEtape;
+use App\Models\Structure;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -39,7 +40,7 @@ class MpMarcheController extends LaravelController
         // Create JSON response of parsed data
         return $this->response($parsedData);
     }
-    
+
     public function sortGrpValeurNbmarche(myBuilder $query,  $value) {
         if ($value) {
             $query->selectRaw('"Nombre de marchés" as libelle,  count(*) data');
@@ -51,7 +52,7 @@ class MpMarcheController extends LaravelController
             $query->selectRaw('"Budget" as libelle,   COALESCE(sum(mp_marche.cout),0) data');
             }
     }
-    
+
     public function sortGrpValeurNbfournisseur(myBuilder $query,  $value) {
         if ($value) {
             $query->selectRaw('"Nombre de fournisseurs" as libelle,  COUNT( distinct coordonnee) data')
@@ -245,7 +246,7 @@ class MpMarcheController extends LaravelController
             // $query->where('inscription_id', Auth::id());
         }
     }
-    
+
      public function filterInscriptionsId(myBuilder $query, $method, $clauseOperator, $value)
     {
         if ($value) {
@@ -314,7 +315,7 @@ class MpMarcheController extends LaravelController
             });
         }
     }
-    
+
      public function filterFournisseurId(myBuilder $query, $method, $clauseOperator, $value)
     {
         if($value) {
@@ -342,7 +343,7 @@ class MpMarcheController extends LaravelController
             });
         }
     }
-    
+
     public function filterPartenairesId(myBuilder $query, $method, $clauseOperator, $value)
     {
         if($value) {
@@ -352,14 +353,14 @@ class MpMarcheController extends LaravelController
             });
         }
     }
-    
+
     public function filterAnnee(myBuilder $query, $method, $clauseOperator, $value, $in)
     {
         if ($value) {
             $query->whereRaw('year(created_at) = ?', $value);
         }
     }
-    
+
     public function filterAnnees(myBuilder $query, $method, $clauseOperator, $value)
     {
         if ($value) {
@@ -382,16 +383,16 @@ class MpMarcheController extends LaravelController
              $query->whereRaw("year(created_at) IN (".$placeholders.")", $args);
         }
     }
-    
-    
+
+
     public function filterMois(myBuilder $query, $method, $clauseOperator, $value, $in)
     {
         if ($value) {
             $query->whereRaw('month(created_at) = ?', $value);
         }
     }
-    
-    
+
+
     public function filterMultipleMois(myBuilder $query, $method, $clauseOperator, $value, $in)
     {
         if ($value) {

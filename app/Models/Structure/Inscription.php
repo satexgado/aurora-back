@@ -42,6 +42,7 @@ class Inscription extends Authenticatable implements MustVerifyEmail
         }
         return 0;
     }
+
     public function estDansStructures()
     {
         return $this->belongsToMany(Structure::class, AffectationStructure::class, 'user', 'structure');

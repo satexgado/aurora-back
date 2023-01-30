@@ -37,6 +37,12 @@ class EmployeController extends BaseController
         $this->affectationStructureService = $affectationStructureService;
     }
 
+    public function all(EmployeApiRequest $request)
+    {
+        return $this->service->all($request);
+    }
+
+
     public function getByStructure(EmployeApiRequest $request,  $structure)
     {
         return $this->service->getByStructure($request, $structure);
