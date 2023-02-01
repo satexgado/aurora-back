@@ -37,7 +37,7 @@ class Inscription extends Authenticatable implements MustVerifyEmail
     public function getPhotoAttribute()
     {
         if ($this->attributes['photo']) {
-            $document_scanne = "https://backend.sigecam.org/public/storage/public/" . $this->attributes['photo'];
+            $document_scanne = "http://127.0.0.1:8000/storage/public/" . $this->attributes['photo'];
             return $document_scanne;
         }
         return 0;
@@ -58,6 +58,10 @@ class Inscription extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(AffectationStructure::class, 'user');
     }
 
+    public function affectation_structures()
+    {
+        return $this->hasMany(\App\Models\AffectationStructure::class, 'user');
+    }
 
     public function getNomCompletAttribute()
     {

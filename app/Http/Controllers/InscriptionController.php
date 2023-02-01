@@ -28,9 +28,9 @@ class InscriptionController extends BaseController
     // }
 
 
-    public function all(ApiRequest $request)
+    public function employees(ApiRequest $request)
     {
-        return $this->service->all($request);
+        return $this->service->employees($request);
     }
 
     public function getByRole($role)

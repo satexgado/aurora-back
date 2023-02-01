@@ -20,9 +20,9 @@ class InscriptionService extends BaseService
     }
 
 
-    public function all(ApiRequest $request)
+    public function employees(ApiRequest $request)
     {
-        return $this->model::with(['affectation_structure.structure', 'affectation_structure.fonction', 'affectation_structure.poste'])->consume($request);
+        return $this->model::with(['affectation_structure.structure', 'affectation_structure.fonctions', 'affectation_structure.poste', 'affectation_structure.role'])->consume($request);
     }
 
 
@@ -43,7 +43,7 @@ class InscriptionService extends BaseService
 
     public function getByRole($role)
     {
-        return $this->model::with(['affectation_structure.fonction', 'affectation_structure.structure'])->whereHas('roles', function ($q) use ($role) {
+        return $this->model::with(['affectation_structure.fonctions', 'affectation_structure.structure'])->whereHas('roles', function ($q) use ($role) {
             return $q->where('roles.id', $role);
         })->consume(null);
     }
@@ -78,7 +78,7 @@ class InscriptionService extends BaseService
 
     public function show(int $id)
     {
-        return $this->model::with(['affectation_structure.structure', 'affectation_structure.fonction', 'affectation_structure.poste'])->findOrFail($id);
+        return $this->model::with(['affectation_structure.structure', 'affectation_structure.fonctions', 'affectation_structure.poste'])->findOrFail($id);
     }
 
     public function getAutresStructures(Request $request)

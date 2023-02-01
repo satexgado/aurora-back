@@ -235,6 +235,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('employes/{employe}', [EmployeController::class, 'update']);
         Route::post('employes', [EmployeController::class, 'store']);
         Route::get('employes', [EmployeController::class, 'all']);
+        Route::get('users/employes', [InscriptionController::class, 'employees']);
     });
 
     Route::get('structures/{structure}/employes', [EmployeController::class, 'getByStructure']);

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class AffectationStructure
- * 
+ *
  * @property int $id
  * @property int $user
  * @property int $structure
@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  * @property string $deleted_at
- * 
+ *
  * @property \App\Models\DroitAcce $droit_acce
  *
  * @package App\Models
@@ -33,7 +33,6 @@ class AffectationStructure extends Eloquent
 	protected $casts = [
 		'user' => 'int',
 		'structure' => 'int',
-		'fonction' => 'int',
 		'droit_acces' => 'int',
 		'inscription' => 'int'
 	];
@@ -41,7 +40,6 @@ class AffectationStructure extends Eloquent
 	protected $fillable = [
 		'user',
 		'structure',
-		'fonction',
 		'droit_acces',
 		'inscription'
 	];
@@ -50,6 +48,11 @@ class AffectationStructure extends Eloquent
 	{
 		return $this->belongsTo(\App\Models\DroitAcce::class, 'droit_acces');
 	}
+
+    public function fonctions()
+    {
+        return $this->belongsToMany(\App\Models\Fonction::class, 'affectation_structure_fonction', 'affectation_structure', 'fonction');
+    }
 
 	public function fonction()
 	{

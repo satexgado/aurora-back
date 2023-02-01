@@ -74,7 +74,7 @@ class Reaction extends Model
 
     public function getFichierAttribute(){
 		if($this->attributes['fichier']){
-			$document_scanne = "https://backend.sigecam.org/public/storage/".$this->attributes['fichier'];
+			$document_scanne = "http://127.0.0.1:8000/public/storage/".$this->attributes['fichier'];
 			return $document_scanne;
 		}
 		return 0;

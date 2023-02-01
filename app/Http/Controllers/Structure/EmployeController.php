@@ -60,10 +60,30 @@ class EmployeController extends BaseController
 
     public function store(Request $request)
     {
-        $request->validate($this->validation);
+        $json = utf8_encode($request->affectation_structures);
+        $data = json_decode($json);
+        // return ;
+        $result=array();
+        if(is_array($data)){
+            // $pivotData = array_fill(0, count($data), ['inscription' => Auth::id()]);
+            // $attachData  = array_combine($data, $pivotData);
+            foreach($data as $element) {
+                $element->inscription = Auth::id();
+                array_push($result, $element);
+              if(is_array($element->fonction))
+                {
+                    $pivotDataFonction = array_fill(0, count($element->fonction), ['inscription_id'=> 1]);
+                    $attachDataFonction  = array_combine($element->fonction, $pivotDataFonction);
+                    array_push($result, $attachDataFonction);
+                }
+            }
+        }
+
+        return $result;
+
+        // $request->validate($this->validation);
 
         $this->inscriptionService->validate($request);
-
 
         try {
             $user = $this->inscriptionService->add($request);
@@ -71,11 +91,28 @@ class EmployeController extends BaseController
             return $this->responseError('L\'email de confirmation n\'a pu être envoyé à l\'utilisteur. Veuillez ressayer ulterieurement.', 500);
         }
 
-        $request->request->add(['user' =>  $user->id, 'inscription' => Auth::id()]);
+        // $request->request->add(['user' =>  $user->id, 'inscription' => Auth::id()]);
+          // $affectation = $this->affectationStructureService->store($request->all());
 
-        $affectation = $this->affectationStructureService->store($request->all());
+        // return $affectation->load(['poste', 'fonction', 'user', 'role']);
 
-        return $affectation->load(['poste', 'fonction', 'user', 'role']);
+        $json = utf8_encode($request->affectation_structures);
+        $data = json_decode($json);
+        if(is_array($data)){
+            foreach($data as $element) {
+                $element->inscription = Auth::id();
+                $element->user = $user->id;
+                $affectation = $this->affectationStructureService->store($element);
+                if(is_array($element->fonction))
+                {
+                    $pivotDataFonction = array_fill(0, count($element->fonction), ['inscription_id'=> 1]);
+                    $attachDataFonction  = array_combine($element->fonction, $pivotDataFonction);
+                    $affectation->fonctions()->attach($attachDataFonction);
+                }
+            }
+        }
+
+
     }
 
     public function update(Request $request, $id)
