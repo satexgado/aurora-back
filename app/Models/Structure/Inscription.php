@@ -60,7 +60,7 @@ class Inscription extends Authenticatable implements MustVerifyEmail
 
     public function affectation_structures()
     {
-        return $this->hasMany(\App\Models\AffectationStructure::class, 'user');
+        return $this->hasMany(AffectationStructure::class, 'user');
     }
 
     public function getNomCompletAttribute()
