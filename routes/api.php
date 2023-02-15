@@ -98,6 +98,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('courrier')->group(function () {
 
+        Route::customResource('coordonnees', 'Courrier\CrCoordonneeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,annuaire:ECRITURE");
+        Route::customResource('coordonnee-groupes', 'Courrier\CrCoordonneeGroupeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,annuaire:ECRITURE");
+
+
         Route::post('courrier-entrants/analyses-datas', 'Courrier\CrCourrierEntrantController@getAnalyse');
         Route::post('courrier-sortants/analyses-datas', 'Courrier\CrCourrierSortantController@getAnalyse');
 
@@ -107,7 +111,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::customResource('ampiliations', 'Courrier\CrAmpiliationController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('clotures', 'Courrier\CrClotureController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('commentaires', 'Courrier\CrCommentaireController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
-        Route::customResource('coordonnees', 'Courrier\CrCoordonneeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('courriers', 'Courrier\CrCourrierController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('courrier-entrants', 'Courrier\CrCourrierEntrantController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('courrier-etapes', 'Courrier\CrCourrierEtapeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
@@ -177,6 +180,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('courrier')->group(function () {
 
+        Route::customResource('coordonnees', 'Courrier\CrCoordonneeController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,annuaire:LECTURE");
+        Route::customResource('coordonnee-groupes', 'Courrier\CrCoordonneeGroupeController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,annuaire:LECTURE");
+
+
         Route::get('mails/markasread/{CrMail}', 'Courrier\CrMailController@markasread')->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
 
         Route::customResource('actions', 'Courrier\CrActionController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
@@ -184,7 +191,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::customResource('ampiliations', 'Courrier\CrAmpiliationController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         Route::customResource('clotures', 'Courrier\CrClotureController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         Route::customResource('commentaires', 'Courrier\CrCommentaireController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
-        Route::customResource('coordonnees', 'Courrier\CrCoordonneeController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         Route::customResource('courriers', 'Courrier\CrCourrierController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         Route::customResource('courrier-entrants', 'Courrier\CrCourrierEntrantController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
         Route::customResource('courrier-etapes', 'Courrier\CrCourrierEtapeController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");

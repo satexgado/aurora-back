@@ -49,7 +49,7 @@ class CrCourrierEntrantController extends LaravelController
                 ->orderBy('grouped_column', 'asc');
             }
     }
-    
+
      public function sortGrpValeurNbcourrier(myBuilder $query,  $value) {
         if ($value) {
             $query->selectRaw('"Nombre de courriers" as libelle,  count(*) data');
@@ -104,14 +104,14 @@ class CrCourrierEntrantController extends LaravelController
                 ->orderBy('grouped_column', 'asc');
             }
     }
-    
+
      public function filterAnnee(myBuilder $query, $method, $clauseOperator, $value, $in)
     {
         if ($value) {
             $query->whereRaw('year(date_arrive) = ?', $value);
         }
     }
-    
+
      public function filterAnnees(myBuilder $query, $method, $clauseOperator, $value)
     {
         if ($value) {
@@ -134,14 +134,14 @@ class CrCourrierEntrantController extends LaravelController
              $query->whereRaw("year(date_arrive) IN (".$placeholders.")", $args);
         }
     }
-    
+
     public function filterMois(myBuilder $query, $method, $clauseOperator, $value, $in)
     {
         if ($value) {
             $query->whereRaw('month(date_arrive) = ?', $value);
         }
     }
-    
+
     public function filterMultipleMois(myBuilder $query, $method, $clauseOperator, $value, $in)
     {
         if ($value) {
@@ -239,7 +239,7 @@ class CrCourrierEntrantController extends LaravelController
             });
         }
     }
-    
+
      public function filterSuiviParsId(myBuilder $query, $method, $clauseOperator, $value)
     {
         if ($value) {
@@ -258,7 +258,7 @@ class CrCourrierEntrantController extends LaravelController
             });
         }
     }
-    
+
     public function filterDossiersId(myBuilder $query, $method, $clauseOperator, $value)
     {
         if ($value) {
@@ -277,7 +277,7 @@ class CrCourrierEntrantController extends LaravelController
             });
         }
     }
-    
+
      public function filterStructuresId(myBuilder $query, $method, $clauseOperator, $value)
     {
         if ($value) {
@@ -296,7 +296,7 @@ class CrCourrierEntrantController extends LaravelController
             });
         }
     }
-    
+
     public function filterTypesId(myBuilder $query, $method, $clauseOperator, $value)
     {
         if ($value) {
@@ -316,7 +316,7 @@ class CrCourrierEntrantController extends LaravelController
             });
         }
     }
-    
+
      public function filterUrgencesId(myBuilder $query, $method, $clauseOperator, $value)
     {
         if ($value) {
@@ -336,7 +336,7 @@ class CrCourrierEntrantController extends LaravelController
             });
         }
     }
-    
+
     public function filterNaturesId(myBuilder $query, $method, $clauseOperator, $value)
     {
         if ($value) {
@@ -381,7 +381,7 @@ class CrCourrierEntrantController extends LaravelController
             });
         }
     }
-    
+
     public function filterExpediteurInternesId(myBuilder $query, $method, $clauseOperator, $value)
     {
         if($value) {
@@ -401,7 +401,7 @@ class CrCourrierEntrantController extends LaravelController
             });
         }
     }
-    
+
     public function filterExpediteurExternesId(myBuilder $query, $method, $clauseOperator, $value)
     {
         if($value) {

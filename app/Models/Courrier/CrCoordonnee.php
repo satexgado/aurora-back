@@ -60,6 +60,12 @@ class CrCoordonnee extends Eloquent
 		return $this->hasMany(\App\Models\Courrier\CrAmpiliation::class, 'coordonnee_id');
 	}
 
+    public function cr_coordonnee_groupes()
+    {
+        return $this->belongsToMany(\App\Models\Courrier\CrCoordonneeGroupe::class, 'cr_affectation_coordonnee_groupe', 'coordonnee_id', 'groupe_id');
+    }
+
+
 	public function cr_courrier_entrants()
 	{
 		return $this->hasMany(\App\Models\Courrier\CrCourrierEntrant::class, 'expediteur_id');
