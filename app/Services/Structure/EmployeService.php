@@ -2,6 +2,7 @@
 
 namespace App\Services\Structure;
 
+use App\ApiRequest\ApiRequest;
 use App\ApiRequest\Structure\EmployeApiRequest;
 use App\Exceptions\NotAllowedException;
 use App\Models\Structure\AffectationStructure;
@@ -20,6 +21,12 @@ class EmployeService extends BaseService
     {
         parent::__construct($model);
     }
+
+    public function all(EmployeApiRequest $request = null)
+    {
+        return $this->model::with(['fonction', 'poste', 'user', 'role'])->consume($request);
+    }
+
     public function getByStructure(EmployeApiRequest $request,  $structure)
     {
         $status = $request->request->status;

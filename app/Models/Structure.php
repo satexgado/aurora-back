@@ -59,7 +59,7 @@ class Structure extends Eloquent
     public function getImageAttribute()
     {
         if ($this->attributes['image']) {
-            $document_scanne = "https://backend.sigecam.org/public/storage/public/" . $this->attributes['image'];
+            $document_scanne = "http://localhost:8000/storage/" . $this->attributes['image'];
             return $document_scanne;
         }
         return 0;

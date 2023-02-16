@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\ApiRequest\ApiRequest;
 use App\Models\Structure\Inscription;
 use App\Services\BaseService;
 use Exception;
@@ -17,6 +18,13 @@ class InscriptionService extends BaseService
     {
         parent::__construct($model);
     }
+
+
+    public function employees(ApiRequest $request)
+    {
+        return $this->model::with(['affectation_structures.structure', 'affectation_structures.fonctions', 'affectation_structures.poste', 'affectation_structures.role'])->consume($request);
+    }
+
 
     public function validate(Request $request)
     {
@@ -35,7 +43,7 @@ class InscriptionService extends BaseService
 
     public function getByRole($role)
     {
-        return $this->model::with(['affectation_structure.fonction', 'affectation_structure.structure'])->whereHas('roles', function ($q) use ($role) {
+        return $this->model::with(['affectation_structures.fonctions', 'affectation_structures.structure', 'affectation_structures.poste'])->whereHas('roles', function ($q) use ($role) {
             return $q->where('roles.id', $role);
         })->consume(null);
     }
@@ -70,9 +78,13 @@ class InscriptionService extends BaseService
 
     public function show(int $id)
     {
-        return $this->model::with(['affectation_structure.structure', 'affectation_structure.fonction', 'affectation_structure.poste'])->findOrFail($id);
+        return $this->model::with(['affectation_structures.structure', 'affectation_structures.fonctions', 'affectation_structures.poste'])->findOrFail($id);
     }
 
+    public function getAutresStructures(Request $request)
+    {
+        return $this->model::consume($request);
+    }
 
 
     // TODO delete image on update

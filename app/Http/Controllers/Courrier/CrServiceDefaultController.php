@@ -6,11 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder as myBuilder;
 use App\Http\Shared\Optimus\Bruno\EloquentBuilderTrait;
 use App\Http\Shared\Optimus\Bruno\LaravelController;
-use App\Models\Courrier\CrCoordonnee;
+use App\Models\Courrier\CrServiceDefault;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
-class CrCoordonneeController extends LaravelController
+class CrServiceDefaultController extends LaravelController
 {
     use EloquentBuilderTrait;
 
@@ -20,7 +21,7 @@ class CrCoordonneeController extends LaravelController
         // Parse the resource options given by GET parameters
         $resourceOptions = $this->parseResourceOptions();
 
-        $query = CrCoordonnee::query();
+        $query = CrServiceDefault::query();
         $this->applyResourceOptions($query, $resourceOptions);
 
         if(isset($request->paginate)) {
@@ -44,56 +45,92 @@ class CrCoordonneeController extends LaravelController
         }
     }
 
-    public function filterGroupesId(myBuilder $query, $method, $clauseOperator, $value)
-    {
-        if ($value) {
-            $ids = explode(",", $value);
-             $query->whereHas('cr_coordonnee_groupes', function($query) use ($ids) {
-                $query->whereIn('cr_affectation_coordonnee_groupe.groupe_id', $ids);
-            });
-        }
-    }
 
     public function filterSearchString(myBuilder $query, $method, $clauseOperator, $value)
     {
         if($value) {
-            $query->orWhere('libelle', 'like', "%" .$value . "%");
+            if($value) {
+                $query->whereHas('structure', function($query) use ($value) {
+                    $query->where(DB::raw('lower(structure.libelle)'), 'like', "%" .Str::lower($value). "%");
+                    // $query->orWhere(DB::raw('lower(cr_courrier.objet)'), 'like', "%" .Str::lower($value). "%");
+                    // $query->orWhere(DB::raw('lower(cr_courrier.numero)'), 'like', "%" .Str::lower($value). "%");
+                });
+            }
         }
     }
 
     public function store(Request $request)
     {
+        DB::beginTransaction();
 
-        $item = CrCoordonnee::create([
-            'inscription_id' => Auth::id(),
-            'libelle' => $request->libelle,
-            'email' => $request->email,
-            'telephone' => $request->telephone,
-            'adresse' => $request->adresse,
-            'condition_suivi' => $request->condition_suivi,
-            'commentaire' => $request->commentaire,
-        ]);
+        try {
+
+            $item = CrServiceDefault::create([
+                'inscription_id' => Auth::id(),
+                'structure_id' => $request->structure_id,
+            ]);
+
+            if($request->exists('users_id'))
+            {
+                $json = utf8_encode($request->users_id);
+                $data = json_decode($json);
+                if(is_array($data)){
+                    $pivotData = array_fill(0, count($data), ['inscription_id' => Auth::id()]);
+                    $syncData  = array_combine($data, $pivotData);
+                    $item->personnes()->sync($syncData);
+                }
+            }
+
+            DB::commit();
+
+        } catch (\Throwable $e) {
+            DB::rollback();
+            throw $e;
+        }
 
         return response()
-        ->json($item);
+        ->json($item->load(['structure','personnes']));
     }
 
     public function update(Request $request, $id)
     {
 
-        $item = CrCoordonnee::findOrFail($id);
+        DB::beginTransaction();
 
-        $data = $request->all();
+        try {
 
-        $item->fill($data)->save();
+            $item = CrServiceDefault::findOrFail($id);
+
+            $data = $request->all();
+
+            $item->fill($data)->save();
+
+            if($request->exists('users_id'))
+            {
+                $json = utf8_encode($request->users_id);
+                $data = json_decode($json);
+                if(is_array($data)){
+                    $pivotData = array_fill(0, count($data), ['inscription_id' => Auth::id()]);
+                    $syncData  = array_combine($data, $pivotData);
+                    $item->personnes()->sync($syncData);
+                }
+            }
+
+            DB::commit();
+
+        } catch (\Throwable $e) {
+            DB::rollback();
+            throw $e;
+        }
+
 
         return response()
-        ->json($item);
+        ->json($item->load(['structure','personnes']));
     }
 
     public function destroy($id)
     {
-        $item = CrCoordonnee::findOrFail($id);
+        $item = CrServiceDefault::findOrFail($id);
 
         $item->delete();
 
@@ -103,7 +140,7 @@ class CrCoordonneeController extends LaravelController
 
     public function restore($id)
     {
-        $restoreDataId = CrCoordonnee::withTrashed()->findOrFail($id);
+        $restoreDataId = CrServiceDefault::withTrashed()->findOrFail($id);
         if($restoreDataId && $restoreDataId->trashed()){
            $restoreDataId->restore();
         }
@@ -117,7 +154,7 @@ class CrCoordonneeController extends LaravelController
         $item_id = $request->id;
         $relation_name = $request->relation_name;
         $relation_id = $request->relation_id;
-        $item = CrCoordonnee::find($item_id);
+        $item = CrServiceDefault::find($item_id);
         $item->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
 
         return response()->json([
@@ -130,7 +167,7 @@ class CrCoordonneeController extends LaravelController
         $item_id = $request->id;
         $relation_name = $request->relation_name;
         $relation_id = $request->relation_id;
-        $item = CrCoordonnee::find($item_id);
+        $item = CrServiceDefault::find($item_id);
         $item->{$relation_name}()->detach($relation_id);
 
         return response()->json([
@@ -147,7 +184,7 @@ class CrCoordonneeController extends LaravelController
 
         try {
 
-            $item = CrCoordonnee::find($item_id);
+            $item = CrServiceDefault::find($item_id);
 
             foreach($request->affectation as $key=>$value)
             {
@@ -169,12 +206,10 @@ class CrCoordonneeController extends LaravelController
         ]);
     }
 
-    public function getAffectation($id)
+    public function getAffectation(CrServiceDefault $CrServiceDefault)
     {
-        $item = CrCoordonnee::findOrFail($id);
 
-        $data['cr_coordonnee_groupes'] = $item->cr_coordonnee_groupes()->get();
         return response()
-        ->json(['data' => $data]);
+        ->json(['data' => 'need to update it']);
     }
 }

@@ -113,7 +113,7 @@ class Structure extends Model
     public function getImageAttribute()
     {
         if ($this->attributes['image']) {
-            $document_scanne = "https://backend.sigecam.org/public/storage/public/" . $this->attributes['image'];
+            $document_scanne = "http://127.0.0.1:8000/storage/public/" . $this->attributes['image'];
             return $document_scanne;
         }
         return 0;

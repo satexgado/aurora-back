@@ -53,6 +53,28 @@ class CrDossier extends Eloquent
 		'date_cloture'
 	];
 
+    //Make it available in the json response
+	protected $appends = ['nb_courrier_entrants','nb_courrier_sortants','nb_courrier_internes'];
+
+    public function getNbCourrierEntrantsAttribute()
+    {
+        return $this->cr_courrier_entrants()->whereHas('cr_provenance', function($query) {
+            $query->where('cr_provenance.externe',1);
+        })->count();
+    }
+
+    public function getNbCourrierSortantsAttribute()
+    {
+        return $this->cr_courrier_sortants()->count();
+    }
+
+    public function getNbCourrierInternesAttribute()
+    {
+        return $this->cr_courrier_entrants()->whereHas('cr_provenance', function($query) {
+            $query->where('cr_provenance.externe',0);
+        })->count();
+    }
+
 	public function inscription()
 	{
 		return $this->belongsTo(\App\Models\Inscription::class, 'responsable_id');

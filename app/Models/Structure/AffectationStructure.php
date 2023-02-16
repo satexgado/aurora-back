@@ -14,7 +14,7 @@ class AffectationStructure extends Model
     use SoftDeletes, ApiRequestConsumer;
     protected $table = 'affectation_structures';
     protected $fillable = [
-        'user', 'structure', 'fonction', 'poste', 'inscription', 'activated_at', 'role'
+        'user', 'structure', 'poste', 'inscription', 'activated_at', 'role'
     ];
 
     protected $appends = ['status'];
@@ -34,6 +34,10 @@ class AffectationStructure extends Model
         return $this->belongsTo(Fonction::class, 'fonction');
     }
 
+    public function fonctions()
+    {
+        return $this->belongsToMany(\App\Models\Fonction::class, 'affectation_structure_fonction', 'affectation_structure', 'fonction');
+    }
 
     public function role()
     {

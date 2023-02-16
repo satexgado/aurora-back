@@ -6,11 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder as myBuilder;
 use App\Http\Shared\Optimus\Bruno\EloquentBuilderTrait;
 use App\Http\Shared\Optimus\Bruno\LaravelController;
-use App\Models\Courrier\CrCoordonnee;
+use App\Models\Courrier\CrFormField;
+use App\Models\Courrier\CrDomaine;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class CrCoordonneeController extends LaravelController
+class CrDomaineController extends LaravelController
 {
     use EloquentBuilderTrait;
 
@@ -20,7 +21,7 @@ class CrCoordonneeController extends LaravelController
         // Parse the resource options given by GET parameters
         $resourceOptions = $this->parseResourceOptions();
 
-        $query = CrCoordonnee::query();
+        $query = CrDomaine::query();
         $this->applyResourceOptions($query, $resourceOptions);
 
         if(isset($request->paginate)) {
@@ -44,15 +45,6 @@ class CrCoordonneeController extends LaravelController
         }
     }
 
-    public function filterGroupesId(myBuilder $query, $method, $clauseOperator, $value)
-    {
-        if ($value) {
-            $ids = explode(",", $value);
-             $query->whereHas('cr_coordonnee_groupes', function($query) use ($ids) {
-                $query->whereIn('cr_affectation_coordonnee_groupe.groupe_id', $ids);
-            });
-        }
-    }
 
     public function filterSearchString(myBuilder $query, $method, $clauseOperator, $value)
     {
@@ -64,14 +56,11 @@ class CrCoordonneeController extends LaravelController
     public function store(Request $request)
     {
 
-        $item = CrCoordonnee::create([
+        $item = CrDomaine::create([
             'inscription_id' => Auth::id(),
             'libelle' => $request->libelle,
-            'email' => $request->email,
-            'telephone' => $request->telephone,
-            'adresse' => $request->adresse,
-            'condition_suivi' => $request->condition_suivi,
-            'commentaire' => $request->commentaire,
+            'description' => $request->description,
+            'priorite' => $request->priorite,
         ]);
 
         return response()
@@ -81,7 +70,7 @@ class CrCoordonneeController extends LaravelController
     public function update(Request $request, $id)
     {
 
-        $item = CrCoordonnee::findOrFail($id);
+        $item = CrDomaine::findOrFail($id);
 
         $data = $request->all();
 
@@ -91,24 +80,25 @@ class CrCoordonneeController extends LaravelController
         ->json($item);
     }
 
-    public function destroy($id)
-    {
-        $item = CrCoordonnee::findOrFail($id);
-
-        $item->delete();
-
-        return response()
-        ->json(['msg' => 'Suppression effectué']);
-    }
-
     public function restore($id)
     {
-        $restoreDataId = CrCoordonnee::withTrashed()->findOrFail($id);
+        $restoreDataId = CrDomaine::withTrashed()->findOrFail($id);
         if($restoreDataId && $restoreDataId->trashed()){
            $restoreDataId->restore();
         }
         return response()
         ->json($restoreDataId);
+    }
+
+
+    public function destroy($id)
+    {
+        $item = CrDomaine::findOrFail($id);
+
+        $item->delete();
+
+        return response()
+        ->json(['msg' => 'Suppression effectué']);
     }
 
     public function attachAffectation(Request $request)
@@ -117,7 +107,7 @@ class CrCoordonneeController extends LaravelController
         $item_id = $request->id;
         $relation_name = $request->relation_name;
         $relation_id = $request->relation_id;
-        $item = CrCoordonnee::find($item_id);
+        $item = CrDomaine::find($item_id);
         $item->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
 
         return response()->json([
@@ -130,7 +120,7 @@ class CrCoordonneeController extends LaravelController
         $item_id = $request->id;
         $relation_name = $request->relation_name;
         $relation_id = $request->relation_id;
-        $item = CrCoordonnee::find($item_id);
+        $item = CrDomaine::find($item_id);
         $item->{$relation_name}()->detach($relation_id);
 
         return response()->json([
@@ -147,7 +137,7 @@ class CrCoordonneeController extends LaravelController
 
         try {
 
-            $item = CrCoordonnee::find($item_id);
+            $item = CrDomaine::find($item_id);
 
             foreach($request->affectation as $key=>$value)
             {
@@ -169,12 +159,10 @@ class CrCoordonneeController extends LaravelController
         ]);
     }
 
-    public function getAffectation($id)
+    public function getAffectation(CrDomaine $CrDomaine)
     {
-        $item = CrCoordonnee::findOrFail($id);
 
-        $data['cr_coordonnee_groupes'] = $item->cr_coordonnee_groupes()->get();
         return response()
-        ->json(['data' => $data]);
+        ->json(['data' => 'need to update it']);
     }
 }
