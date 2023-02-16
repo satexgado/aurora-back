@@ -15,6 +15,7 @@ use App\Models\Notification;
 class CrCourrierController extends LaravelController
 {
     use EloquentBuilderTrait;
+  
 
     public function getAll(Request $request)
     {

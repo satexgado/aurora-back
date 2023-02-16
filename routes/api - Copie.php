@@ -37,7 +37,11 @@ Route::get('structures/all', [StructureController::class, 'all']);
 
 Route::get('conditions-utilisations', [ConditionsUtilisationController::class, 'show']);
 Route::put('conditions-utilisations', [ConditionsUtilisationController::class, 'update']);
-
+//For me
+//Suivre
+Route::resource('ticket', 'Suivre\TicketsuivController');
+Route::get('mycourrier', 'Courrier\CrCourrierController@allcourrier');
+ // End me
 
 // Route::put('users/{id}', [InscriptionController::class, 'update']);
 
@@ -332,56 +336,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('diffcrbymonthdash/{id}', 'Dash\CourrierdashController@diffcrbymonth');
     Route::get('timingdash', 'Dash\CourrierdashController@timing');
     Route::get('expediteurdash', 'Dash\CourrierdashController@expediteurcr');
-    //For me
-    //Suivre
-    Route::resource('ticket', 'Suivre\TicketsuivController');
-    Route::get('mycourrier', 'Sh\CourrierController@allcourrier');
-    Route::get('myuserby/{id}', 'Sh\CourrierController@getAlluserLikename');
-    Route::get('mycoordby/{id}', 'Sh\CourrierController@searchcordone');
-    Route::get('mystruct', 'Sh\CourrierController@structure');
-    Route::resource('execticket', 'Suivre\ExecticketsuivController');
-    Route::get('byticket/{id}', 'Suivre\ExecticketsuivController@byticket');
-    Route::get('byexwithsuiv/{id}', 'Suivre\ExecticketsuivController@byexecwithsuiv');
-    //Rapport
-    Route::resource('ticketrap', 'Rapport\TicketrapportController');
-    Route::resource('execrap', 'Rapport\ExecticketrapController');
-    Route::get('rapbyticket/{id}', 'Rapport\ExecticketrapController@byticket');
-    Route::get('byexwithrap/{id}', 'Rapport\ExecticketrapController@byexecwithrap');
-    //Lab colab
-    Route::resource('modelfilab', 'Labcolab\ModellabController');
-    Route::resource('fichlabmodel', 'Labcolab\FichiermodelController');
-    Route::resource('extendfilab', 'Labcolab\ExtendfilemodelController');
-    Route::get('filabbymodel/{id}', 'Labcolab\ExtendfilemodelController@bymodel');
-    Route::get('filemodel/{id}', 'Labcolab\ExtendfilemodelController@modele');
-    Route::get('filevalid/{id}', 'Labcolab\ExtendfilemodelController@valid');
-    Route::get('filewithobs', 'Labcolab\ExtendfilemodelController@withobserv');
-    Route::get('filekan', 'Labcolab\ExtendfilemodelController@bykan');
-    Route::resource('colabfilab', 'Labcolab\CollabfichierController');
-    Route::get('colabfilabby/{id}', 'Labcolab\CollabfichierController@byfichier');
-    Route::resource('obsfilab', 'Labcolab\ObservfichierController');
-    Route::get('obsfilabby/{id}', 'Labcolab\ObservfichierController@byfichier');
-    Route::resource('comfilelab', 'Labcolab\CommentfichierController');
-    Route::get('comlabyfile/{id}','Labcolab\CommentfichierController@commentbyfichier');
-    Route::resource('echeafile', 'Labcolab\EcheancefichierController');
-    Route::get('echeabyfile/{id}', 'Labcolab\EcheancefichierController@byfile');
-    Route::resource('motclefile', 'Labcolab\MotclefichierController');
-    Route::get('motclebyfile/{id}','Labcolab\MotclefichierController@byfile');
-    Route::resource('servfile', 'Labcolab\ServicefichierController');
-    Route::get('servbyfile/{id}','Labcolab\ServicefichierController@byfile');
-    Route::resource('intvfile', 'Labcolab\IntervenantfichierController');
-    Route::get('intvbyfile/{id}','Labcolab\IntervenantfichierController@byfile');
-    Route::get('kanbyfile/{id}','Labcolab\IntervenantfichierController@kanbanbyfile');
-    ///I mail U
-    //Modele
-    Route::resource('categmodmu', 'Mailu\Model\CategmodelmuController');
-    Route::resource('modelmu', 'Mailu\Model\ModelmuController');
-    Route::get('modelpubmu', 'Mailu\Model\ModelmuController@bypub');
-    Route::get('modelprivmu', 'Mailu\Model\ModelmuController@bypriv');
-    //Fichier
-    Route::get('typefilemu', 'Sh\CourrierController@fichiertype');
-    Route::resource('filemu', 'Mailu\Fichier\FichiermuController');
-    Route::get('filepubmu', 'Mailu\Fichier\FichiermuController@bypub');
-    Route::get('fileprivmu', 'Mailu\Fichier\FichiermuController@bypriv');
-    Route::post('storefilmu/{id}','Mailu\Fichier\FichiermuController@storefile');
-    // End me
 });
