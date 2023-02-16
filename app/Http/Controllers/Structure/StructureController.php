@@ -148,6 +148,11 @@ class StructureController extends BaseController
         return $this->service->getByUser($request, $user);
     }
 
+    public function getByUserWCountCourrier(StructureApiRequest $request, $user)
+    {
+        return $this->service->getByUserWCountCourrier($request, $user);
+    }
+
     public function getByUserWDossier(StructureApiRequest $request, $user)
     {
         return $this->service->getByUserWDossier($request, $user);

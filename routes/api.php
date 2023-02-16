@@ -236,7 +236,7 @@ Route::middleware('auth:sanctum')->group(function () {
     /* ** SAT Lecture Only permission END * **/
     /* ** ************************************* * **/
      //Suivre
-   
+
 
     Route::get('employes/{id}', [EmployeController::class, 'show']);
     Route::middleware('ability:ADMIN:ADMIN,structure:ECRITURE')->group(function () {
@@ -261,6 +261,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::get('structures/all', [StructureController::class, 'all']);
     Route::get('users/{user}/structures', [StructureController::class, 'getByUser']);
     Route::get('users/{user}/structuresWdossiers', [StructureController::class, 'getByUserWDossier']);
+    Route::get('users/{user}/structuresWCountCourriers', [StructureController::class, 'getByUserWCountCourrier']);
     Route::get('structures/autres', [StructureController::class, 'getAutresStructures']);
     Route::get('structures/{structure}/oldest', [StructureController::class, 'getOldestAncestor']);
     Route::apiResource('structures', 'Structure\StructureController')->except(['store', 'udpated', 'delete']);
@@ -316,7 +317,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('commentbymuridee/{id}', 'Muridee\CommentmurideeController@commentbymur');
     Route::resource('sharedmuridee', 'Muridee\SharedmurideeController');
     Route::resource('likemuridee', 'Muridee\LikemurideeController');
-   
+
 
 
 

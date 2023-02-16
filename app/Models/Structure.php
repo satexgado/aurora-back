@@ -142,4 +142,19 @@ class Structure extends Eloquent
     {
         return $this->belongsToMany(Inscription::class, ResponsableStructure::class, 'structure', 'responsable')->select(['inscription.id', 'prenom', 'nom', 'photo']);
     }
+
+    public function cr_dossiers()
+	{
+		return $this->hasMany(\App\Models\Courrier\CrDossier::class, 'structure_id');
+	}
+
+    public function cr_courrier_entrant_dossiers()
+    {
+        return $this->hasManyThrough(\App\Models\Courrier\CrCourrier::class, \App\Models\Courrier\CrDossier::class,  'structure_id', 'dossier_id')->whereHas('cr_courrier_entrants');
+    }
+
+    public function cr_courrier_sortant_dossiers()
+    {
+        return $this->hasManyThrough(\App\Models\Courrier\CrCourrier::class, \App\Models\Courrier\CrDossier::class,  'structure_id', 'dossier_id')->whereHas('cr_courrier_sortants');
+    }
 }

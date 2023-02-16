@@ -61,10 +61,6 @@ class Structure extends Model
         return isset($sous_structure);
     }
 
-
-
-
-
     public function affectation_structures()
     {
         return $this->hasMany(AffectationStructure::class, 'structure');

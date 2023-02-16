@@ -11,6 +11,7 @@ use App\Traits\Structure\AuthorisationTrait;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Structure as StructureWDossier;
+use Illuminate\Support\Facades\DB;
 
 class StructureService extends BaseService
 {
@@ -68,6 +69,27 @@ class StructureService extends BaseService
         return $this->model::whereHas('_employes', function ($q) use ($user) {
             $q->where('inscription.id', $user);
         })->consume($request);
+    }
+
+    public function getByUserWCountCourrier(StructureApiRequest $request,  $user)
+    {
+        return StructureWDossier::whereHas('_employes', function ($q) use ($user) {
+            $q->where('inscription.id', $user);
+        })->withCount([
+            'cr_dossiers',
+            'cr_courrier_entrant_dossiers as nb_courrier_entrants' => function ($query) {
+                $query->whereHas('cr_courrier_entrants.cr_provenance', function($query) {
+                    $query->where('cr_provenance.externe',1);
+                });
+            },
+            'cr_courrier_entrant_dossiers as nb_courrier_internes' => function ($query) {
+                $query->whereHas('cr_courrier_entrants.cr_provenance', function($query) {
+                    $query->where('cr_provenance.externe',0);
+                });
+            },
+            'cr_courrier_sortant_dossiers as nb_courrier_sortants',
+
+        ])->get();
     }
 
     public function getByUserWDossier(StructureApiRequest $request,  $user)
