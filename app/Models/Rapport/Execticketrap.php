@@ -8,23 +8,23 @@ class Execticketrap extends Model
 {
     protected $table = 'aur_execution_rapport';
     protected $guarded = ['id'];
-     
-     public function ticket() 
+
+     public function ticket()
     {
         return $this->hasOne('App\Models\Rapport\Ticketrapport','id','ticket');
     }
 
-     public function personnelle() 
+     public function personnelle()
     {
         return $this->hasOne('App\Models\Inscription','id','personnelle');
     }
-     public function coordonnee() 
+     public function coordonnee()
     {
-        return $this->hasOne('App\Models\Courrier\CrCoordonnee','id','coordonnee');
+        return $this->hasOne('App\Models\Dash\CrCoordonnee','id','coordonnee');
     }
- 
-   
-     public function inscription() 
+
+
+     public function inscription()
     {
         return $this->hasOne('App\Models\Inscription','id','inscription');
     }

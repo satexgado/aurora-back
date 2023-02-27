@@ -14,31 +14,33 @@ use App\Models\Ged\FichierType;
 
 class CourrierController extends Controller
 {
-       public function allcourrier() 
-       {  
-          return DB::table('cr_courrier')->Orderby('id','DESC')->get();
-       }
+    public function allcourrier()
+    {
+        return DB::table('cr_courrier')->Orderby('id','DESC')->get();
+    }
 
-       public function getAlluserLikename($name)
+    public function getAlluserLikename($name)
     {
        return  Inscription::where('email','like','%' . $name . '%')
         ->orWhere('telephone','like','%' . $name . '%')
         ->orWhere('nom','like','%' . $name . '%')
         ->orWhere('prenom','like','%' . $name . '%')
-        ->get();        
+        ->get();
     }
 
-      public function searchcordone($name)
+    public function searchcordone($name)
     {
       return CrCoordonnee::where('libelle','like','%' . $name . '%')->get();
     }
-       public function structure()
+
+    public function structure()
     {
       return DB::table('structures')->Orderby('id','DESC')->get();
     }
-       public function fichiertype()
+
+    public function fichiertype()
     {
       return Fichiertype::Orderby('id','DESC')->get();
     }
-    
+
 }

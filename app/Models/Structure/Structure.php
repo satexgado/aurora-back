@@ -15,7 +15,7 @@ class Structure extends Model
     protected $table = 'structures';
     protected $guarded = [];
     // protected $hidden = ['parent_id'];
-    protected $with = ['type:id,libelle', 'parent'];
+    protected $with = ['type:id,libelle', 'parent', 'structure_parent'];
 
     protected $appends = ['has_sous_structures', 'responsable'];
 
@@ -25,6 +25,11 @@ class Structure extends Model
     }
 
     public function parent()
+    {
+        return $this->belongsTo(Structure::class, 'parent_id');
+    }
+
+     public function structure_parent()
     {
         return $this->belongsTo(Structure::class, 'parent_id');
     }
@@ -60,6 +65,10 @@ class Structure extends Model
         $sous_structure = $this->sous_structures()->first();
         return isset($sous_structure);
     }
+
+
+
+
 
     public function affectation_structures()
     {
@@ -109,7 +118,7 @@ class Structure extends Model
     public function getImageAttribute()
     {
         if ($this->attributes['image']) {
-            $document_scanne = "http://127.0.0.1:8000/storage/public/" . $this->attributes['image'];
+            $document_scanne = "http://localhost:8000/storage/" . $this->attributes['image'];
             return $document_scanne;
         }
         return 0;

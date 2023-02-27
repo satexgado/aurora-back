@@ -16,7 +16,6 @@ use App\Http\Controllers\Structure\PosteController;
 use App\Http\Controllers\Structure\StructureController;
 use App\Http\Controllers\Structure\TypeStructureController;
 use App\Http\Controllers\TestController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -54,8 +53,8 @@ Route::get('email/verify', 'VerificationController@verify')->name('email.verify'
 Route::get('user/{user}/email/resend', 'VerificationController@resend')->name('email.resend');
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('auth/logout', [AuthenticationController::class, 'logout']);
 
+    Route::post('auth/logout', [AuthenticationController::class, 'logout']);
     Route::middleware('ability:ADMIN:ADMIN,structure:ECRITURE')->group(function () {
         Route::get('structures/{structure}/roles', [RoleController::class, 'getByStructure']);
         Route::get('structures/{structure}/roles/all', [RoleController::class, 'getAllByStructure']);
@@ -96,16 +95,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::customResource('ged-elements', 'Ged\GedElementController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('ged-partages', 'Ged\GedPartageController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
 
-
     Route::prefix('courrier')->group(function () {
 
         Route::customResource('coordonnees', 'Courrier\CrCoordonneeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,annuaire:ECRITURE");
         Route::customResource('coordonnee-groupes', 'Courrier\CrCoordonneeGroupeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,annuaire:ECRITURE");
 
-
         Route::post('courrier-entrants/analyses-datas', 'Courrier\CrCourrierEntrantController@getAnalyse');
         Route::post('courrier-sortants/analyses-datas', 'Courrier\CrCourrierSortantController@getAnalyse');
-
 
         Route::customResource('actions', 'Courrier\CrActionController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
         Route::customResource('affectation-courriers', 'Courrier\CrAffectationCourrierController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
@@ -170,7 +166,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('dossiers/checkpassword/{id}', 'Ged\DossierController@checkPassword');
     Route::post('fichiers/checkpassword/{id}', 'Ged\FichierController@checkPassword');
 
-
     Route::customResource('dossiers', 'Ged\DossierController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
     Route::customResource('fichiers', 'Ged\FichierController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
     Route::customResource('fichier-types', 'Ged\FichierTypeController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
@@ -178,12 +173,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::customResource('ged-elements', 'Ged\GedElementController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
     Route::customResource('ged-partages', 'Ged\GedPartageController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
 
-
     Route::prefix('courrier')->group(function () {
 
         Route::customResource('coordonnees', 'Courrier\CrCoordonneeController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,annuaire:LECTURE");
         Route::customResource('coordonnee-groupes', 'Courrier\CrCoordonneeGroupeController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,annuaire:LECTURE");
-
 
         Route::get('mails/markasread/{CrMail}', 'Courrier\CrMailController@markasread')->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
 
@@ -237,7 +230,6 @@ Route::middleware('auth:sanctum')->group(function () {
     /* ** ************************************* * **/
      //Suivre
 
-
     Route::get('employes/{id}', [EmployeController::class, 'show']);
     Route::middleware('ability:ADMIN:ADMIN,structure:ECRITURE')->group(function () {
         Route::put('employes/{employe}/validate', [EmployeController::class, 'validateEmploye']);
@@ -250,11 +242,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('structures/{structure}/employes', [EmployeController::class, 'getByStructure']);
     Route::get('structures/{structure}/responsables', [EmployeController::class, 'getResponsablesByStructure']);
 
-
     Route::put('users/password', [InscriptionController::class, 'updatePassword']);
     Route::post('users', [InscriptionController::class, 'store']);
-
-
 
     Route::get('structures/types/all', [TypeStructureController::class, 'all']);
 
@@ -269,12 +258,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('structures/{structure}/sous-structures', [StructureController::class, 'getSousStructures']);
     Route::get('structures/{structure}/sous-structures/all', [StructureController::class, 'getAllSousStructures']);
 
-
-
     Route::get('structures/{structure}/structure-et-sous-structures', [StructureController::class, 'getStructureEtSousStructures']);
 
     Route::get('dossiers', [DossierController::class, 'getAll']);
-
 
     Route::post('discussions/check', [DiscussionController::class, 'check']);
     Route::get('discussions/all', [DiscussionController::class, 'all']);
@@ -317,10 +303,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('commentbymuridee/{id}', 'Muridee\CommentmurideeController@commentbymur');
     Route::resource('sharedmuridee', 'Muridee\SharedmurideeController');
     Route::resource('likemuridee', 'Muridee\LikemurideeController');
-
-
-
-
 
     // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     //     return $request->user();
