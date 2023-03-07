@@ -91,7 +91,7 @@ class EmployeController extends BaseController
             }
         }
 
-        return $affectation->load(['poste', 'fonction', 'user', 'role']);
+        return $affectation->load(['poste', 'fonctions', 'user', 'role']);
     }
 
     public function update(Request $request, $id)
@@ -104,9 +104,9 @@ class EmployeController extends BaseController
             $this->inscriptionService->edit($request, $request->user);
         }
 
-        if($request->exists('removedArticle'))
+        if($request->exists('removedAffectation'))
         {
-            $json = utf8_encode($request->removedArticle);
+            $json = utf8_encode($request->removedAffectation);
             $data = json_decode($json);
             if(is_array($data)){
                 foreach($data as $element) {
@@ -135,7 +135,7 @@ class EmployeController extends BaseController
                     {
                         $pivotDataFonction = array_fill(0, count($element->fonctions), ['inscription_id'=> Auth::id()]);
                         $attachDataFonction  = array_combine($element->fonctions, $pivotDataFonction);
-                        $affectation->fonctions()->attach($attachDataFonction);
+                        $affectation->fonctions()->sync($attachDataFonction);
                     }
                 }
             }

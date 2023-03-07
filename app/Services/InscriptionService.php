@@ -78,7 +78,7 @@ class InscriptionService extends BaseService
 
     public function show(int $id)
     {
-        return $this->model::with(['affectation_structures.structure', 'affectation_structures.fonctions', 'affectation_structures.poste'])->findOrFail($id);
+        return $this->model::with(['affectation_structures.structure', 'affectation_structures.fonctions', 'affectation_structures.poste', 'affectation_structures.role'])->findOrFail($id);
     }
 
     public function getAutresStructures(Request $request)

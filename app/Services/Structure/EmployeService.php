@@ -24,7 +24,7 @@ class EmployeService extends BaseService
 
     public function all(EmployeApiRequest $request = null)
     {
-        return $this->model::with(['fonction', 'poste', 'user', 'role'])->consume($request);
+        return $this->model::with(['fonctions', 'poste', 'user', 'role'])->consume($request);
     }
 
     public function getByStructure(EmployeApiRequest $request,  $structure)
@@ -39,7 +39,7 @@ class EmployeService extends BaseService
             if (!$this->isAdmin(Auth::id(), $structure)) throw new NotAllowedException();
         }
 
-        return $this->model::status($status)->where('structure', $structure)->with(['fonction', 'poste', 'user', 'role'])->consume($request);
+        return $this->model::status($status)->where('structure', $structure)->with(['fonctions', 'poste', 'user', 'role'])->consume($request);
     }
 
 
@@ -47,7 +47,7 @@ class EmployeService extends BaseService
     {
         // Update affectation structure details
         $affectation = $this->model::findOrFail($id);
-        $affectation->update(['poste' => $data['poste'], 'fonction' => $data['fonction'], 'role' => $data['role']]);
+        // $affectation->update(['poste' => $data['poste'], 'fonction' => $data['fonction'], 'role' => $data['role']]);
 
         // Return the value
         return $this->show($id);
@@ -63,6 +63,6 @@ class EmployeService extends BaseService
 
     public function show($id)
     {
-        return $this->model::with(['fonction', 'poste', 'user', 'structure:id,libelle,type', 'role'])->findOrFail($id);
+        return $this->model::with(['fonctions', 'poste', 'user', 'structure:id,libelle,type', 'role'])->findOrFail($id);
     }
 }

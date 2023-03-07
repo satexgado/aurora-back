@@ -53,12 +53,7 @@ class AffectationStructure extends Eloquent
     {
         return $this->belongsToMany(\App\Models\Fonction::class, 'affectation_structure_fonction', 'affectation_structure', 'fonction');
     }
-
-	public function fonction()
-	{
-		return $this->belongsTo(\App\Models\Fonction::class, 'fonction');
-	}
-
+	
 	public function inscription()
 	{
 		return $this->belongsTo(\App\Models\Inscription::class, 'user');
