@@ -65,7 +65,7 @@ class Role extends Model
 
     public function getNombreUtilisateursAttribute()
     {
-        return $this->users->count();
+        return $this->users()->distinct('inscription.id')->count();
     }
 
     public function authorisations()

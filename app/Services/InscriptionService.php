@@ -43,7 +43,7 @@ class InscriptionService extends BaseService
 
     public function getByRole($role)
     {
-        return $this->model::with(['affectation_structures.fonctions', 'affectation_structures.structure', 'affectation_structures.poste'])->whereHas('roles', function ($q) use ($role) {
+        return $this->model::with(['affectation_structures.fonctions', 'affectation_structures.structure', 'affectation_structures.poste', 'affectation_structures.role'])->whereHas('roles', function ($q) use ($role) {
             return $q->where('roles.id', $role);
         })->consume(null);
     }
