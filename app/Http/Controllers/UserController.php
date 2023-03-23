@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use  App\Http\Shared\Optimus\Bruno\EloquentBuilderTrait;
 use  App\Http\Shared\Optimus\Bruno\LaravelController;
-use App\Models\Inscription;
+use App\Models\Structure\Inscription;
 use App\Services\InscriptionService;
 use Illuminate\Database\Eloquent\Builder as myBuilder;
+use Illuminate\Support\Facades\Cache;
 use Auth;
 
 class UserController extends LaravelController
@@ -28,6 +29,28 @@ class UserController extends LaravelController
         return $this->service->show($id);
     }
 
+    // public function getAll(Request $request)
+    // {
+
+    //     // Parse the resource options given by GET parameters
+    //     $resourceOptions = $this->parseResourceOptions();
+
+    //     $query = Inscription::query();
+    //     $this->applyResourceOptions($query, $resourceOptions);
+
+    //     if (isset($request->paginate)) {
+    //         $items = $query->paginate($request->paginate);
+    //         $parsedData = $items;
+    //     } else {
+    //         $items = $query->get();
+    //         // Parse the data using Optimus\Architect
+    //         $parsedData = $this->parseData($items, $resourceOptions, 'data');
+    //     }
+
+    //     // Create JSON response of parsed data
+    //     return $this->response($parsedData);
+    // }
+
     public function getAll(Request $request)
     {
 
@@ -39,15 +62,22 @@ class UserController extends LaravelController
 
         if (isset($request->paginate)) {
             $items = $query->paginate($request->paginate);
+            $items->setCollection($this->getUsersStatuts($items->getCollection()));
             $parsedData = $items;
         } else {
             $items = $query->get();
+            $items = $this->getUsersStatuts($items);
             // Parse the data using Optimus\Architect
             $parsedData = $this->parseData($items, $resourceOptions, 'data');
         }
 
         // Create JSON response of parsed data
         return $this->response($parsedData);
+    }
+
+    public function sortNomComplet(myBuilder $query, $value)
+    {
+        $query->orderBy('inscription.prenom')->orderBy('inscription.nom');
     }
 
     public function restrictedModule(Request $request, $module)
@@ -182,5 +212,68 @@ class UserController extends LaravelController
 
         return response()
             ->json($contact);
+    }
+
+    public function onlineUsers() {
+        // Get the array of users
+        $users = Cache::get('online-users');
+        if(!$users) return null;
+        
+        // Add the array to a collection so you can pluck the IDs
+        $onlineUsers = collect($users);
+        // Get all users by ID from the DB (1 very quick query)
+        $dbUsers = Inscription::find($onlineUsers->pluck('id')->toArray());
+        
+        // Prepare the return array
+        $displayUsers = [];
+
+        // Iterate over the retrieved DB users
+        foreach ($dbUsers as $user){
+            // Get the same user as this iteration from the cache
+            // so that we can check the last activity.
+            // firstWhere() is a Laravel collection method.
+            $onlineUser = $onlineUsers->firstWhere('id', $user['id']) ;
+            // Append the data to the return array
+            $displayUsers[] = [
+                'id' => $user->id,
+                'nom' => $user->nom,
+                'prenom' => $user->prenom,
+                'photo' => $user->photo,
+                'last_activity_at' => $onlineUser['last_activity_at'],
+                // This Bool operation below, checks if the last activity
+                // is older than 3 minutes and returns true or false,
+                // so that if it's true you can change the status color to orange.
+                'away' => $onlineUser['last_activity_at'] < now()->subMinutes(3),
+            ];
+        }
+        return collect($displayUsers);
+    }
+
+    public function getUsersStatuts($dbUsers) {
+
+        // Get the array of users
+        $users = Cache::get('online-users');
+        if(!$users) return $dbUsers;
+
+        // Add the array to a collection so you can pluck the IDs
+        $onlineUsers = collect($users);
+
+        $dbUsers = $dbUsers->map(function($user) use ($onlineUsers) {
+
+            // Get the same user as this iteration from the cache
+            // so that we can check the last activity.
+            // firstWhere() is a Laravel collection method.
+            $onlineUser = $onlineUsers->firstWhere('id', $user['id']) ;
+
+            if($onlineUser) {
+                $user->last_activity_at = $onlineUser['last_activity_at'];
+                $user->away = $onlineUser['last_activity_at'] < now()->subMinutes(3);
+            }
+            
+            return $user;
+            
+        });
+        
+        return $dbUsers;
     }
 }

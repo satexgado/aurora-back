@@ -57,11 +57,12 @@ class CrReaffectation extends Eloquent
     protected $with = [
         'inscription',
         'suivi_par_inscription',
-        'structure'
+        'structure',
+        'cr_courrier'
     ];
     
      //Make it available in the json response
-	protected $appends = ['is_user'];
+	protected $appends = ['is_user', 'link'];
 	
 	public function getIsUserAttribute()
 	{
@@ -71,6 +72,24 @@ class CrReaffectation extends Eloquent
 		}
 		return false;
 	}
+	
+    public function getLinkAttribute()
+    {
+        $link ="";
+        if($this->cr_courrier->cr_courrier_sortants()->count()) {
+            $link = '/courrier/sortant/'.$this->cr_courrier->cr_courrier_sortants()->first()->id;
+        }
+        else if(
+            $this->cr_courrier->cr_courrier_entrants()->whereHas('cr_provenance', function($query) {
+                $query->where('cr_provenance.externe',1);
+            })->count()
+        ) {
+            $link = '/courrier/entrant/'.$this->cr_courrier->cr_courrier_entrants()->first()->id;
+        }  else  {
+            $link = '/courrier/interne/'.$this->cr_courrier->cr_courrier_entrants()->first()->id;
+        }
+        return $link;
+    }
 
     public function cr_courrier()
     {

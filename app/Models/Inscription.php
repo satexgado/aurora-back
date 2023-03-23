@@ -90,6 +90,9 @@ class Inscription extends Eloquent
         'inscription'
     ];
 
+    protected $hidden = ['password'];
+
+
     public function getPhotoAttribute()
     {
         if ($this->attributes['photo']) {
@@ -102,12 +105,6 @@ class Inscription extends Eloquent
     public function inscription()
     {
         return $this->belongsTo(\App\Models\Inscription::class, 'inscription');
-    }
-
-
-    public function affectation_structures()
-    {
-        return $this->hasMany(\App\Models\AffectationStructure::class, 'user');
     }
 
     public function cr_actions()
@@ -260,14 +257,24 @@ class Inscription extends Eloquent
         return $this->hasMany(\App\Models\LogActivity::class, 'inscription');
     }
 
-    public function structures()
-    {
-        return $this->hasMany(\App\Models\Structure::class, 'inscription');
-    }
-
     public function estDansStructures()
     {
-        return $this->belongsToMany(\App\Models\Structure::class, AffectationStructure::class, 'user', 'structure');
+        return $this->belongsToMany(Structure::class, AffectationStructure::class, 'user', 'structure');
+    }
+
+    public function structures()
+    {
+        return $this->hasMany(Structure::class, 'inscription');
+    }
+
+    public function affectation_structure()
+    {
+        return $this->hasOne(AffectationStructure::class, 'user');
+    }
+
+    public function affectation_structures()
+    {
+        return $this->hasMany(AffectationStructure::class, 'user');
     }
 
     public function type_admins()

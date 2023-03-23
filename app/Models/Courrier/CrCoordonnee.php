@@ -37,7 +37,7 @@ class CrCoordonnee extends Eloquent
 	protected $table = 'cr_coordonnee';
 
 	protected $casts = [
-		'inscription_id' => 'int'
+		'inscription_id' => 'int',
 	];
 
 	protected $fillable = [
@@ -47,6 +47,7 @@ class CrCoordonnee extends Eloquent
 		'adresse',
 		'condition_suivi',
 		'commentaire',
+		'tag',
 		'inscription_id'
 	];
 

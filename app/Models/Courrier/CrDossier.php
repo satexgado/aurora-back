@@ -8,6 +8,7 @@
 namespace App\Models\Courrier;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use App\Models\Relations\HasManySyncable;
 
 /**
  * Class CrDossier
@@ -97,7 +98,7 @@ class CrDossier extends Eloquent
 
     public function cr_courriers()
 	{
-		return $this->hasMany(\App\Models\Courrier\CrCourrier::class, 'dossier_id');
+		return $this->hasMany(\App\Models\Dash\CrCourrier::class, 'dossier_id');
 	}
 
     public function cr_courrier_entrants()
@@ -115,4 +116,22 @@ class CrDossier extends Eloquent
         return $this->belongsToMany(\App\Models\Inscription::class, 'cr_reaffectation', 'courrier_id', 'suivi_par');
     }
 
+	/**
+     * Overrides the default Eloquent hasMany relationship to return a HasManySyncable.
+     *
+     * {@inheritDoc}
+     * @return \App\Model\Relations\HasManySyncable
+     */
+    public function hasMany($related, $foreignKey = null, $localKey = null)
+    {
+        $instance = $this->newRelatedInstance($related);
+
+        $foreignKey = $foreignKey ?: $this->getForeignKey();
+
+        $localKey = $localKey ?: $this->getKeyName();
+
+        return new HasManySyncable(
+            $instance->newQuery(), $this, $instance->getTable().'.'.$foreignKey, $localKey
+        );
+    }
 }

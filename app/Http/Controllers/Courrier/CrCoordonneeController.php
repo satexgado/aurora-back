@@ -61,6 +61,13 @@ class CrCoordonneeController extends LaravelController
         }
     }
 
+    public function filterHasTag(myBuilder $query, $method, $clauseOperator, $value)
+    {
+        if($value) {
+            $query->orWhere('tag', 'like', "%" .$value . "%");
+        }
+    }
+
     public function store(Request $request)
     {
 
@@ -72,10 +79,26 @@ class CrCoordonneeController extends LaravelController
             'adresse' => $request->adresse,
             'condition_suivi' => $request->condition_suivi,
             'commentaire' => $request->commentaire,
+            'tag' => $request->tag,
         ]);
 
+        
+        if($request->exists('groupes_id'))
+        {
+            $json = utf8_encode($request->groupes_id);
+            $groupes = json_decode($json);
+            if(!is_array($groupes))
+            {
+                $groupes = explode(',', $groupes);
+            }
+            $pivotData = array_fill(0, count($groupes), ['inscription_id'=> 1]);
+            $attachData  = array_combine($groupes, $pivotData);
+            $item->cr_coordonnee_groupes()->attach($attachData);
+        }
+
+
         return response()
-        ->json($item);
+        ->json($item->load('cr_coordonnee_groupes'));
     }
 
     public function update(Request $request, $id)
@@ -87,8 +110,21 @@ class CrCoordonneeController extends LaravelController
 
         $item->fill($data)->save();
 
+        if($request->exists('groupes_id'))
+        {
+            $json = utf8_encode($request->groupes_id);
+            $groupes = json_decode($json);
+            if(!is_array($groupes))
+            {
+                $groupes = explode(',', $groupes);
+            }
+            $pivotData = array_fill(0, count($groupes), ['inscription_id'=> 1]);
+            $attachData  = array_combine($groupes, $pivotData);
+            $item->cr_coordonnee_groupes()->sync($attachData);
+        }
+
         return response()
-        ->json($item);
+        ->json($item->load('cr_coordonnee_groupes'));
     }
 
     public function destroy($id)

@@ -46,6 +46,43 @@ class CrReaffectationController extends LaravelController
         }
     }
 
+    public function filterIsForIns(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->where('suivi_par', Auth::id())->whereNull('confirmation')
+              ->whereNull('annulation');
+        }
+    }
+
+
+    public function filterHasEntrant(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->whereHas('cr_courrier.cr_courrier_entrants', function($query) {
+                $query->whereHas('cr_provenance', function($query) {
+                    $query->where('cr_provenance.externe',1);
+                });
+            });
+        }
+    }
+
+    public function filterHasSortant(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->whereHas('cr_courrier.cr_courrier_sortants');
+        }
+    }
+
+    public function filterHasInterne(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->whereHas('cr_courrier.cr_courrier_entrants', function($query) {
+                $query->whereHas('cr_provenance', function($query) {
+                    $query->where('cr_provenance.externe',0);
+                });
+            });
+        }
+    }
 
     public function filterSearchString(myBuilder $query, $method, $clauseOperator, $value)
     {

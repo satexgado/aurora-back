@@ -58,7 +58,7 @@ class CrCoordonneeGroupeController extends LaravelController
 
         $item = CrCoordonneeGroupe::create([
             'inscription_id' => Auth::id(),
-            'groupe_id' => Auth::id(),
+            'groupe_id' => $request->groupe_id,
             'libelle' => $request->libelle,
         ]);
 

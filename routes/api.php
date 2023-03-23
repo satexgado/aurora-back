@@ -10,6 +10,7 @@ use App\Http\Controllers\Messagerie\DiscussionController;
 use App\Http\Controllers\Messagerie\ReactionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RoleUserController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\Structure\EmployeController;
 use App\Http\Controllers\Structure\FonctionController;
 use App\Http\Controllers\Structure\PosteController;
@@ -55,6 +56,8 @@ Route::get('user/{user}/email/resend', 'VerificationController@resend')->name('e
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('auth/logout', [AuthenticationController::class, 'logout']);
+    Route::get('users/online', [UserController::class, 'onlineUsers']);
+
     Route::middleware('ability:ADMIN:ADMIN,structure:ECRITURE')->group(function () {
         Route::get('structures/{structure}/roles', [RoleController::class, 'getByStructure']);
         Route::get('structures/{structure}/roles/all', [RoleController::class, 'getAllByStructure']);

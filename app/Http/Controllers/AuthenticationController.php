@@ -7,6 +7,7 @@ use App\Services\Authorization\AuthorisationService;
 use App\Services\InscriptionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class AuthenticationController extends Controller
 {
@@ -59,7 +60,7 @@ class AuthenticationController extends Controller
             return response()->json([
                 'access_token' => $token->plainTextToken,
                 'authorisations' => $authorisations,
-                'user' => array_merge($user->toArray(), ['affectation_structure' => $user->affectation_structure()->with('structure:id,libelle,image,type', 'poste:id,libelle', 'fonctions:id,libelle', 'role:id,libelle')->get()->first()->toArray()]),
+                'user' => array_merge($user->toArray(), ['affectation_structures' => $user->affectation_structures()->with('structure:id,libelle,image,type', 'poste:id,libelle', 'fonctions:id,libelle', 'role:id,libelle')->get()->toArray()]),
                 'structures' => $user->estDansStructures()->without('type', 'parent')->pluck('structures.id'),
                 'token_type' => 'Bearer',
             ]);
@@ -72,7 +73,19 @@ class AuthenticationController extends Controller
 
     public function logout()
     {
-        Auth::user()->tokens()->delete();;
+        // $users = Cache::get('online-users');
+        // if(!empty($users)) {
+        //     foreach ($users as $key => $user) {
+        //         // If the current iteration matches the logged in user, unset it because it's old
+        //         // and we want only the last user interaction to be stored (and we'll store it below)
+        //         if($user['id'] === Auth::user()->id) {
+        //             unset($users[$key]);
+        //             continue;
+        //         }
+        //     }
+        //     Cache::put('online-users', $users, now()->addMinutes(10));
+        // }
+        Auth::user()->tokens()->delete();
         return null;
     }
 

@@ -37,7 +37,7 @@ class CrCoordonnee extends Eloquent
 	protected $table = 'cr_coordonnee';
 
 	protected $casts = [
-		'inscription_id' => 'int'
+		'inscription_id' => 'int',
 	];
 
 	protected $fillable = [
@@ -47,6 +47,7 @@ class CrCoordonnee extends Eloquent
 		'adresse',
 		'condition_suivi',
 		'commentaire',
+		'tag',
 		'inscription_id'
 	];
 
@@ -60,6 +61,11 @@ class CrCoordonnee extends Eloquent
 		return $this->hasMany(\App\Models\Courrier\CrAmpiliation::class, 'coordonnee_id');
 	}
 
+	public function cr_coordonnee_groupes()
+    {
+        return $this->belongsToMany(\App\Models\Courrier\CrCoordonneeGroupe::class, 'cr_affectation_coordonnee_groupe', 'coordonnee_id', 'groupe_id');
+    }
+	
 	public function cr_courrier_entrants()
 	{
 		return $this->hasMany(\App\Models\Dash\CrCourrierEntrant::class, 'expediteur_id');

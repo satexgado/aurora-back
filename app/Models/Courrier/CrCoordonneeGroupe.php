@@ -43,6 +43,19 @@ class CrCoordonneeGroupe extends Eloquent
 		'groupe_id'
 	];
 
+	//Make it available in the json response
+	protected $appends = ['nb_coordonnees','nb_coordonnee_groupes'];
+
+	public function getNbCoordonneesAttribute()
+    {
+        return $this->cr_coordonnees()->count();
+    }
+
+	public function getNbCoordonneeGroupesAttribute()
+    {
+        return $this->cr_coordonnee_groupes()->count();
+    }
+
 	public function cr_coordonnee_groupe()
 	{
 		return $this->belongsTo(\App\Models\Courrier\CrCoordonneeGroupe::class, 'groupe_id');
