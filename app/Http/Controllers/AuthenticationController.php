@@ -73,18 +73,18 @@ class AuthenticationController extends Controller
 
     public function logout()
     {
-        // $users = Cache::get('online-users');
-        // if(!empty($users)) {
-        //     foreach ($users as $key => $user) {
-        //         // If the current iteration matches the logged in user, unset it because it's old
-        //         // and we want only the last user interaction to be stored (and we'll store it below)
-        //         if($user['id'] === Auth::user()->id) {
-        //             unset($users[$key]);
-        //             continue;
-        //         }
-        //     }
-        //     Cache::put('online-users', $users, now()->addMinutes(10));
-        // }
+        $users = Cache::get('online-users');
+        if(!empty($users)) {
+            foreach ($users as $key => $user) {
+                // If the current iteration matches the logged in user, unset it because it's old
+                // and we want only the last user interaction to be stored (and we'll store it below)
+                if($user['id'] === Auth::user()->id) {
+                    unset($users[$key]);
+                    continue;
+                }
+            }
+            Cache::put('online-users', $users, now()->addMinutes(10));
+        }
         Auth::user()->tokens()->delete();
         return null;
     }
