@@ -58,6 +58,11 @@ class StructureController extends BaseController
         return $this->model::consume($request);
     }
 
+    public function allWEmployee(StructureApiRequest $request)
+    {
+        return $this->model::with('_employes')->consume($request);
+    }
+
 
     public function store(Request $request)
     {

@@ -106,6 +106,30 @@ class UserController extends LaravelController
         }
     }
 
+    public function filterHasTacheCollab(myBuilder $query, $method, $clauseOperator, $value)
+    {
+        if($value) {
+            $query->where('inscription.id', '!=', Auth::id() );
+            $query->where(function($query){
+                $query->whereHas('cr_taches.responsables', function($query){
+                    $query->where('inscription.id', Auth::id() );
+                });
+                $query->orWhereHas('cr_taches.structures._employes', function($query){
+                    $query->where('inscription.id', Auth::id() );
+                });
+            });
+        } else {
+            $query->where(function($query){
+                $query->whereHas('cr_taches.responsables', function($query){
+                    $query->where('inscription.id', '!=', Auth::id() );
+                });
+                $query->whereHas('cr_taches.structures._employes', function($query){
+                    $query->where('inscription.id', '!=', Auth::id() );
+                });
+            });
+        }
+    }
+
     public function attachAffectation(Request $request)
     {
 
@@ -243,7 +267,7 @@ class UserController extends LaravelController
                 // This Bool operation below, checks if the last activity
                 // is older than 3 minutes and returns true or false,
                 // so that if it's true you can change the status color to orange.
-                'away' => $onlineUser['last_activity_at'] < now()->subMinutes(3),
+                'away' => $onlineUser['last_activity_at'] < now()->subMinutes(1),
             ];
         }
         return collect($displayUsers);
@@ -267,7 +291,7 @@ class UserController extends LaravelController
 
             if($onlineUser) {
                 $user->last_activity_at = $onlineUser['last_activity_at'];
-                $user->away = $onlineUser['last_activity_at'] < now()->subMinutes(3);
+                $user->away = $onlineUser['last_activity_at'] < now()->subMinutes(1);
             }
             
             return $user;
