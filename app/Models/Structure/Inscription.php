@@ -83,6 +83,15 @@ class Inscription extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Structure::class, AffectationStructure::class, 'user', 'structure');
     }
 
+    public function cr_taches()
+    {
+        return $this->hasMany(\App\Models\Courrier\Crtache::class, 'inscription_id');
+    }
+
+    public function cr_taches_collab()
+	{
+        return $this->belongsToMany(\App\Models\Courrier\Crtache::class, 'cr_affectation_tache_personne', 'personne', 'tache');
+	}
 
     public function roles()
     {
