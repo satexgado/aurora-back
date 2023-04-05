@@ -10,7 +10,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
+use Auth;
 
 class Inscription extends Authenticatable implements MustVerifyEmail
 {
@@ -86,6 +86,20 @@ class Inscription extends Authenticatable implements MustVerifyEmail
     public function cr_taches()
     {
         return $this->hasMany(\App\Models\Courrier\Crtache::class, 'inscription_id');
+    }
+
+    public function tache_linkeds()
+    {
+        return $this->hasMany(\App\Models\Courrier\Crtache::class, 'inscription_id')->where(function($query){
+            $query->whereHas('responsables', function($query){
+                $query->where('inscription.id', Auth::id() );
+            });
+            $query->orWhereHas('structures._employes', function($query){
+                $query->where('inscription.id', Auth::id() );
+            });
+        })
+        ->whereNull('cr_tache.archived_at')
+        ->orderBy('cr_tache.updated_at', 'desc')->orderBy('cr_tache.date_limit', 'desc');
     }
 
     public function cr_taches_collab()

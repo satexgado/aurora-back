@@ -8,6 +8,7 @@
 namespace App\Models\Courrier;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Auth;
 
 /**
  * Class CrEtape
@@ -42,6 +43,8 @@ class CrTache extends Eloquent
 
     protected $dates = [
         'date_limit',
+        'archived_at',
+
     ];
 
 	protected $fillable = [
@@ -51,12 +54,15 @@ class CrTache extends Eloquent
         'statut_color',
         'statut_icon',
         'statut',
+		'archived_at',
         'date_limit'
 	];
 
     public function getCommentsCountAttribute()
 	{
-		return $this->cr_commentaires()->count();
+		return $this->cr_commentaires()->whereDoesntHave('vues', function($query){
+			$query->where('inscription.id', Auth::id());
+		})->count();
     }
 
     protected $appends = ['comments_count'];

@@ -394,6 +394,7 @@ class CrCourrierSortantController extends LaravelController
                 'date_cloture' => $request->date_cloture,
                 'date_limit' => $request->date_limit,
                 'commentaire' => $request->commentaire,
+                'courrier_lier_id' => $request->courrier_lier_id,
                 'numero' => $request->numero,
                 'type_id' => $request->type_id,
                 'urgence_id' => $request->urgence_id,

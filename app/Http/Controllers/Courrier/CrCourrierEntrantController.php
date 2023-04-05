@@ -392,7 +392,6 @@ class CrCourrierEntrantController extends LaravelController
         }
     }
 
-
     public function filterExpediteurExterneId(myBuilder $query, $method, $clauseOperator, $value)
     {
         if($value) {
@@ -431,6 +430,7 @@ class CrCourrierEntrantController extends LaravelController
                 'urgence_id' => $request->urgence_id,
                 'statut_id' => 1,
                 'nature_id' => $request->nature_id,
+                'courrier_lier_id' => $request->courrier_lier_id,
                 'structure_id' => $request->structure_id,
                 'suivi_par' => $request->suivi_par,
                 'additional_field' => $request->additional_field,

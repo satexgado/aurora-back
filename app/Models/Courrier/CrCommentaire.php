@@ -8,7 +8,7 @@
 namespace App\Models\Courrier;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
-
+use Auth;
 /**
  * Class CrCommentaire
  *
@@ -34,8 +34,8 @@ class CrCommentaire extends Eloquent
 		'commentaire' => 'int'
 	];
 
-    protected $touches = ['cr_commentaire'];
-    protected $with = ['cr_commentaires','fichiers'];
+    protected $touches = ['cr_commentaire', 'cr_taches', 'cr_courriers', 'ged_elements'];
+    protected $with = ['cr_commentaires', 'fichiers'];
 
 	protected $fillable = [
 		'libelle_commentaire',
@@ -45,12 +45,27 @@ class CrCommentaire extends Eloquent
 	];
 
     //Make it available in the json response
-	protected $appends = ['auteur'];
+	protected $appends = ['auteur', 'user_has_read'];
 
     //implement the attribute
 	public function getAuteurAttribute()
 	{
 		return $this->inscription()->first(['nom','prenom','photo']);
+	}
+
+	public function getUserHasReadAttribute()
+	{
+		if(Auth::check())
+		{
+			$count = $this->vues()->where('inscription.id', Auth::id())->count();
+
+			if(!$count) {
+				$this->vues()->syncWithoutDetaching(Auth::id());
+			}
+
+			return $count;
+		}
+		return false;
 	}
 
 	public function cr_commentaire()
@@ -86,5 +101,10 @@ class CrCommentaire extends Eloquent
     public function cr_taches()
 	{
 		return $this->belongsToMany(\App\Models\Courrier\CrTache::class, 'cr_affectation_commentaire_tache', 'commentaire', 'tache');
+	}
+
+	public function vues()
+	{
+		return $this->belongsToMany(\App\Models\Structure\Inscription::class, 'cr_affectation_commentaire_vue', 'commentaire', 'personne');
 	}
 }

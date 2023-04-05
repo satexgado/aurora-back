@@ -79,7 +79,7 @@ class CrCourrierEntrant extends Eloquent
 
     public function expediteur()
     {
-        return $this->morphTo();
+        return $this->morphTo()->withTrashed();
     }
 
     public function cr_provenance()
@@ -114,6 +114,6 @@ class CrCourrierEntrant extends Eloquent
 
 	public function cr_structure_copies()
 	{
-		return $this->hasMany(\App\Models\Courrier\CrStructureCopie::class, 'courrier_id')->withTrashed();
+		return $this->hasMany(\App\Models\Courrier\CrStructureCopie::class, 'courrier_id');
 	}
 }

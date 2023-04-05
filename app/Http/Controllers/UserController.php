@@ -9,6 +9,8 @@ use App\Models\Structure\Inscription;
 use App\Services\InscriptionService;
 use Illuminate\Database\Eloquent\Builder as myBuilder;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Auth;
 
 class UserController extends LaravelController
@@ -108,24 +110,21 @@ class UserController extends LaravelController
 
     public function filterHasTacheCollab(myBuilder $query, $method, $clauseOperator, $value)
     {
+        $query->where('inscription.id', '!=', Auth::id());
+
         if($value) {
-            $query->where('inscription.id', '!=', Auth::id() );
-            $query->where(function($query){
-                $query->whereHas('cr_taches.responsables', function($query){
-                    $query->where('inscription.id', Auth::id() );
-                });
-                $query->orWhereHas('cr_taches.structures._employes', function($query){
-                    $query->where('inscription.id', Auth::id() );
-                });
-            });
+            $query->whereHas('tache_linkeds');
         } else {
-            $query->where(function($query){
-                $query->whereHas('cr_taches.responsables', function($query){
-                    $query->where('inscription.id', '!=', Auth::id() );
-                });
-                $query->whereHas('cr_taches.structures._employes', function($query){
-                    $query->where('inscription.id', '!=', Auth::id() );
-                });
+            $query->whereDoesntHave('tache_linkeds');
+        }
+    }
+
+    public function filterSearchString(myBuilder $query, $method, $clauseOperator, $value)
+    {
+        if($value) {
+            $query->where(function($query) use ($value){
+                $query->where(DB::raw('lower(prenom)'), 'like', "%" .Str::lower($value). "%");
+                $query->orWhere(DB::raw('lower(nom)'), 'like', "%" .Str::lower($value). "%");
             });
         }
     }

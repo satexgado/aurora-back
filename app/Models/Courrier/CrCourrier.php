@@ -70,6 +70,7 @@ class CrCourrier extends Eloquent
         'suivi_par' => 'int',
         'inscription_id' => 'int',
         'current_etape_id' => 'int',
+        'courrier_lier_id' => 'int',
         'cloture_id' => 'int'
     ];
 
@@ -99,11 +100,13 @@ class CrCourrier extends Eloquent
         'date_cloture',
         'message_cloture',
         'date_limit',
+        'courrier_lier_id',
         'additional_field'
     ];
 
     protected $with = [
         'cr_dossier',
+        'cr_courrier_lier',
         'cr_statut',
         'cr_type',
         'cr_nature',
@@ -112,7 +115,7 @@ class CrCourrier extends Eloquent
         'cr_courrier_etapes',
         'structure_copie_traitements',
         'structure_copie_informations',
-        'inscription'
+        'inscription',
     ];
 
     protected $appends = ['structure', 'suivi_par_inscription', 'is_user'];
@@ -164,6 +167,29 @@ class CrCourrier extends Eloquent
         return $this->belongsTo(\App\Models\Courrier\CrCourrierEtape::class, 'current_etape_id')->withTrashed();
     }
 
+    public function cr_courrier_lier()
+    {
+        return $this->belongsTo(\App\Models\Dash\CrCourrierWLink::class, 'courrier_lier_id')->withTrashed();
+    }
+
+    public function affiliatedToCourriers()
+    {
+        return $this->belongsToMany(\App\Models\Dash\CrCourrierWLink::class, 'cr_affectation_courrier_lier', 'to_courrier', 'from_courrier');
+    }
+
+    public function affiliatedFromCourriers()
+    {
+        return $this->belongsToMany(\App\Models\Dash\CrCourrierWLink::class, 'cr_affectation_courrier_lier', 'from_courrier', 'to_courrier');
+    }
+
+    public function affiliated_courriers() {
+        return $this->getRelationValue('affiliatedFromCourriers')->union($this->getRelationValue('affiliatedToCourriers')->toBase());
+    }
+
+    public function affiliated_courriers2()
+    {
+        $this->belongsToMany(\App\Models\Dash\CrCourrierWLink::class, 'cr_affectation_courrier_lier', 'to_courrier', 'from_courrier')->orWhere('from_courrier', $this->id);;
+    }
 
     public function structure()
     {
@@ -213,7 +239,7 @@ class CrCourrier extends Eloquent
 
     public function cr_courrier_entrants()
     {
-        return $this->hasMany(\App\Models\Courrier\CrCourrierEntrant::class, 'courrier_id');
+        return $this->hasMany(\App\Models\Courrier\CrCourrierEntrant::class, 'courrier_id')->withTrashed();
     }
 
     public function cr_courrier_etapes()
@@ -228,7 +254,7 @@ class CrCourrier extends Eloquent
 
     public function cr_courrier_sortants()
     {
-        return $this->hasMany(\App\Models\Courrier\CrCourrierSortant::class, 'courrier_id');
+        return $this->hasMany(\App\Models\Courrier\CrCourrierSortant::class, 'courrier_id')->withTrashed();
     }
 
     public function cr_fichiers()
