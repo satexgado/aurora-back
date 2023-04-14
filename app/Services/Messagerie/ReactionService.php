@@ -110,7 +110,7 @@ class ReactionService extends BaseService
 
         if (isset($file)) {
             $reaction->update([
-                'fichier' => $file->storeAs('discussion/' . $reaction->discussion . '/image', time() . '_' . Auth::id() . '_' . str_replace(' ', '_', $file->getClientOriginalName()), 'public')
+                'fichier' => $file->storeAs('discussion/' . $reaction->discussion . '/image', time() . '_' . Auth::id() . '_' . str_replace(' ', '_', $file->getClientOriginalName()), 'local')
             ]);
         }
 

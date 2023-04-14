@@ -125,6 +125,8 @@ class UserController extends LaravelController
             $query->where(function($query) use ($value){
                 $query->where(DB::raw('lower(prenom)'), 'like', "%" .Str::lower($value). "%");
                 $query->orWhere(DB::raw('lower(nom)'), 'like', "%" .Str::lower($value). "%");
+                $query->orWhere(DB::raw('concat(lower(nom), " ", lower(prenom))'), 'like', "%" .Str::lower($value). "%");
+                $query->orWhere(DB::raw('concat(lower(prenom), " ", lower(nom))'), 'like', "%" .Str::lower($value). "%");
             });
         }
     }

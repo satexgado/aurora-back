@@ -102,7 +102,7 @@ class ModelmuController extends Controller
      public function bypub()
     {
         return Modelmu::with('categorie','inscription')
-        ->where('statut','Public')
+        ->where('statut','local')
         ->Orderby('id','DESC')
         ->get();
     }

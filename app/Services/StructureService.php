@@ -46,7 +46,7 @@ class StructureService extends BaseService
 
         if (Arr::has($data, 'image') && ($data['image'] instanceof \SplFileInfo)) {
             $file = $data['image'];
-            $structure->update(['image' => $file->storeAs('structure/' . $structure->id . '/image', $file->getClientOriginalName(), 'public')]);
+            $structure->update(['image' => $file->storeAs('structure/' . $structure->id . '/image', $file->getClientOriginalName(), 'local')]);
         }
 
         return $structure->refresh();

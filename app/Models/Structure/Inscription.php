@@ -37,7 +37,7 @@ class Inscription extends Authenticatable implements MustVerifyEmail
     public function getPhotoAttribute()
     {
         if ($this->attributes['photo']) {
-            $document_scanne = "http://127.0.0.1:8000/storage/public/" . $this->attributes['photo'];
+            $document_scanne = "http://127.0.0.1:8000/storage/" . $this->attributes['photo'];
             return $document_scanne;
         }
         return 0;

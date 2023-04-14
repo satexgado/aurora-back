@@ -71,7 +71,7 @@ class InscriptionController extends BaseController
         // TOFO
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
-            $imagePath = $file->storeAs('inscription/' . $inscription->email . '/photo', $file->getClientOriginalName(), 'public');
+            $imagePath = $file->storeAs('inscription/' . $inscription->email . '/photo', $file->getClientOriginalName(), 'local');
             $inscription->update(['photo' => $imagePath]);
         }
 

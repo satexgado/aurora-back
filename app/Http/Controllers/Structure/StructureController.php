@@ -129,7 +129,7 @@ class StructureController extends BaseController
          // TOFO
          if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $imagePath = $file->storeAs('structure/' . $structure->id . '/image', $file->getClientOriginalName(), 'public');
+            $imagePath = $file->storeAs('structure/' . $structure->id . '/image', $file->getClientOriginalName(), 'local');
             $structure->update(['image' => $imagePath]);
 
             // Delete previous image

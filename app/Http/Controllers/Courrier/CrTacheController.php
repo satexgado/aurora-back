@@ -92,7 +92,7 @@ class CrTacheController extends LaravelController
         }
 
         return response()
-        ->json($item->load(['responsables', 'structures', 'inscription']));
+        ->json($item->load(['responsables', 'structures', 'inscription', 'courriers']));
     }
 
     public function update(Request $request, $id)
@@ -105,7 +105,7 @@ class CrTacheController extends LaravelController
         $item->fill($data)->save();
 
         return response()
-        ->json($item->load(['responsables', 'structures', 'inscription']));
+        ->json($item->load(['responsables', 'structures', 'inscription', 'courriers']));
     }
 
     public function destroy($id)

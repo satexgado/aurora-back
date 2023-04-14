@@ -17,6 +17,7 @@ use App\Http\Controllers\Structure\PosteController;
 use App\Http\Controllers\Structure\StructureController;
 use App\Http\Controllers\Structure\TypeStructureController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\FormDependanciesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -54,6 +55,9 @@ Route::get('email/verify', 'VerificationController@verify')->name('email.verify'
 Route::get('user/{user}/email/resend', 'VerificationController@resend')->name('email.resend');
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('form-dependancies/entrant', [FormDependanciesController::class, 'entrant']);
+
 
     Route::post('auth/logout', [AuthenticationController::class, 'logout']);
     Route::get('users/online', [UserController::class, 'onlineUsers']);

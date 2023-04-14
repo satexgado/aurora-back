@@ -153,7 +153,7 @@ class FichiermuController extends Controller
      public function bypub()
     {
         return Fichiermu::with('categorie','type','inscription')
-        ->where('statut','Public')
+        ->where('statut','local')
         ->Orderby('id','DESC')
         ->get();
     }
