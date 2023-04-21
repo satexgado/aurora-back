@@ -56,6 +56,8 @@ Route::get('user/{user}/email/resend', 'VerificationController@resend')->name('e
 
 Route::middleware('auth:sanctum')->group(function () {
 
+    Route::customResource('saved-states', 'SavedStateController');
+
     Route::get('form-dependancies/entrant', [FormDependanciesController::class, 'entrant']);
 
 
