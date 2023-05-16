@@ -63,6 +63,8 @@ class GedElement extends Eloquent
 	];
 
 	protected $appends = ['user_favoris', 'comments_count'];
+    protected $with = ['ged_partages.personne_inscription'];
+
     protected $classified = ['password'];
 
     public function getUserFavorisAttribute()

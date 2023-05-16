@@ -73,6 +73,13 @@ class FichierController extends LaravelController
         }
     }
 
+    public function filterNoParent(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->doesntHave('dossiers');
+        }
+    }
+
     public function filterCourrierId(myBuilder $query, $method, $clauseOperator, $value, $in)
     {
         if ($value) {

@@ -102,6 +102,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::customResource('fichier-types', 'Ged\FichierTypeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('ged-conservations', 'Ged\GedConservationRuleController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('ged-elements', 'Ged\GedElementController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
+    Route::customResource('ged-modeles', 'Ged\GedModeleController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('ged-partages', 'Ged\GedPartageController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
 
     Route::prefix('courrier')->group(function () {
@@ -180,6 +181,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::customResource('fichier-types', 'Ged\FichierTypeController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
     Route::customResource('ged-conservations', 'Ged\GedConservationRuleController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
     Route::customResource('ged-elements', 'Ged\GedElementController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
+    Route::customResource('ged-modeles', 'Ged\GedModeleController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
     Route::customResource('ged-partages', 'Ged\GedPartageController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
 
     Route::prefix('courrier')->group(function () {
