@@ -51,7 +51,12 @@ class FichierController extends LaravelController
     public function filterSearchString(myBuilder $query, $method, $clauseOperator, $value)
     {
         if($value) {
-            $query->orWhere('libelle', 'like', "%" .$value . "%");
+            $words = explode(" ", $value);
+            $query->where(function ($query) use($words) {
+                for ($i = 0; $i < count($words); $i++){
+                   $query->where('libelle', 'like',  '%' . $words[$i] .'%');
+                }      
+           });
         }
     }
 
@@ -80,6 +85,97 @@ class FichierController extends LaravelController
         }
     }
 
+    public function filterOwnerAllHome(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+
+            $query->where(function($query) {
+                $query->whereHas('ged_element.partage_a_personnes', function($query) {
+                    $query->where('ged_partage.personne', Auth::id());
+                 });
+            });
+
+            $query->orWhere(function($query){
+                $query->doesntHave('dossiers');
+                $query->where('inscription_id', Auth::id());
+                $query->doesnthave('ged_element.structures');
+            });  
+            
+        }
+    }
+
+    public function filterOwnerMineHome(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->where(function($query){
+                $query->doesntHave('dossiers');
+                $query->where('inscription_id', Auth::id());
+                $query->doesnthave('ged_element.structures');
+            });  
+            
+        }
+    }
+
+    public function filterOwnerSharedHome(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+
+            $query->where(function($query) {
+                $query->whereHas('ged_element.partage_a_personnes', function($query) {
+                    $query->where('ged_partage.personne', Auth::id());
+                 });
+            });            
+        }
+    }
+
+    public function filterOwnerAllFolder(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            
+            $query->whereHas('dossiers', function($query) use ($value){
+                $query->where('dossier.id', $value);
+             });
+
+        }
+    }
+
+    public function filterOwnerMineFolder(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->whereHas('dossiers', function($query) use ($value){
+                $query->where('dossier.id', $value);
+             });
+            $query->where('inscription_id', Auth::id());
+        }
+    }
+
+    public function filterOwnerSharedFolder(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            
+            $query->whereHas('dossiers', function($query) use ($value){
+                $query->where('dossier.id', $value);
+            });
+            $query->where('inscription_id', '!=',Auth::id());
+
+            // $query->where(function($query) {
+            //     $query->where(function($query){
+            //         $query->whereHas('ged_element.partage_a_personnes', function($query) {
+            //             $query->where('ged_partage.personne', Auth::id());
+            //          });
+            //     });  
+            //     $query->orWhere(function($query) {
+            //         $query->whereHas('ancestors', function($query) {
+            //             $query->whereHas('ged_element.partage_a_personnes', function($query) {
+            //                 $query->where('ged_partage.personne', Auth::id());
+            //              });
+            //         });
+            //     });
+            // });      
+        }
+    }
+
+
     public function filterCourrierId(myBuilder $query, $method, $clauseOperator, $value, $in)
     {
         if ($value) {
@@ -101,9 +197,8 @@ class FichierController extends LaravelController
     public function filterTypeId(myBuilder $query, $method, $clauseOperator, $value, $in)
     {
         if ($value) {
-            $query->whereHas('fichier_type', function($query) use ($value){
-                $query->where('fichier_type.id', $value);
-             });
+            $ids = explode(",", $value);
+            $query->whereIn('type_id',$ids);
         }
     }
 

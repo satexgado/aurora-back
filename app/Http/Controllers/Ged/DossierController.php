@@ -50,7 +50,12 @@ class DossierController extends LaravelController
     public function filterSearchString(myBuilder $query, $method, $clauseOperator, $value)
     {
         if($value) {
-            $query->orWhere('libelle', 'like', "%" .$value . "%");
+            $words = explode(" ", $value);
+            $query->where(function ($query) use($words) {
+                for ($i = 0; $i < count($words); $i++){
+                   $query->where('libelle', 'like',  '%' . $words[$i] .'%');
+                }      
+           });
         }
     }
 
@@ -116,21 +121,157 @@ class DossierController extends LaravelController
         }
     }
 
-    public function filterCacher(myBuilder $query, $method, $clauseOperator, $value)
-{
-    if ($value && $value !='') {
-        $query->whereHas('ged_element', function($query) {
-            $query->where('ged_element.cacher', 1);
-        });
-    } else {
-        $query->whereHas('ged_element', function($query) {
-            $query->where('ged_element.cacher', '!=', 1);
-        });
+    public function filterOwnerAllHome(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+
+            $query->where(function($query) {
+                $query->whereHas('ged_element.partage_a_personnes', function($query) {
+                    $query->where('ged_partage.personne', Auth::id());
+                 });
+                 $query->whereHas('ged_element', function($query) {
+                    $query->where('ged_element.cacher', '!=', 1);
+                });
+            });
+
+            $query->orWhere(function($query){
+                $query->doesntHave('dossier');
+                $query->where('inscription_id', Auth::id());
+                $query->doesnthave('ged_element.structures');
+            });  
+            
+        }
     }
-}
+
+    public function filterOwnerMineHome(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->where(function($query){
+                $query->doesntHave('dossier');
+                $query->where('inscription_id', Auth::id());
+                $query->doesnthave('ged_element.structures');
+            });  
+            
+        }
+    }
+
+    public function filterOwnerSharedHome(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+
+            $query->where(function($query) {
+                $query->whereHas('ged_element.partage_a_personnes', function($query) {
+                    $query->where('ged_partage.personne', Auth::id());
+                 });
+            });  
+
+            $query->whereHas('ged_element', function($query) {
+                $query->where('ged_element.cacher', '!=', 1);
+            });    
+
+        }
+    }
+
+    public function filterLinkedToUser(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+
+        if ($value) {
+
+            $query->where(function($query){
+                $query->where('inscription_id', Auth::id());
+                $query->doesnthave('ged_element.structures');
+            });  
+
+            $query->orWhere(function($query){
+                $query->whereHas('ged_element.partage_a_personnes', function($query) {
+                    $query->where('ged_partage.personne', Auth::id());
+                    $query->where('ged_element.cacher', '!=', 1);
+                });
+            });  
+
+            $query->orWhere(function($query) {
+                $query->whereHas('ancestors', function($query) {
+                    $query->where(function($query){
+                        $query->where('inscription_id', Auth::id());
+                        $query->doesnthave('ged_element.structures');
+                    });  
+                    $query->orWhere(function($query){
+                        $query->whereHas('ged_element.partage_a_personnes', function($query) {
+                            $query->where('ged_partage.personne', Auth::id());
+                            $query->where('ged_element.cacher', '!=', 1);
+                        }); 
+                    });  
+                });
+            });
+        }
+    }
+
+    public function filterOwnerAllFolder(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            
+            $query->where('dossier_id', $value); 
+            $query->where(function($query){
+                $query->where('inscription_id', Auth::id());
+                $query->orWhereHas('ged_element', function($query) {
+                    $query->where('ged_element.cacher', '!=', 1);
+                });
+            });
+        }
+    }
+
+    public function filterOwnerMineFolder(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->where('dossier_id', $value); 
+            $query->where('inscription_id', Auth::id());
+        }
+    }
+
+    public function filterOwnerSharedFolder(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            
+            $query->where('dossier_id', $value); 
+            $query->where('inscription_id', '!=',Auth::id());
+            $query->whereHas('ged_element', function($query) {
+                $query->where('ged_element.cacher', '!=', 1);
+            });
+
+            // $query->where(function($query) {
+            //     $query->where(function($query){
+            //         $query->whereHas('ged_element.partage_a_personnes', function($query) {
+            //             $query->where('ged_partage.personne', Auth::id());
+            //          });
+            //     });  
+            //     $query->orWhere(function($query) {
+            //         $query->whereHas('ancestors', function($query) {
+            //             $query->whereHas('ged_element.partage_a_personnes', function($query) {
+            //                 $query->where('ged_partage.personne', Auth::id());
+            //              });
+            //         });
+            //     });
+            // });      
+        }
+    }
+
+    public function filterCacher(myBuilder $query, $method, $clauseOperator, $value)
+    {
+        if ($value && $value !='') {
+            $query->whereHas('ged_element', function($query) {
+                $query->where('ged_element.cacher', 1);
+            });
+        } else {
+            $query->whereHas('ged_element', function($query) {
+                $query->where('ged_element.cacher', '!=', 1);
+            });
+        }
+    }
 
     public function store(Request $request)
     {
+        return response()
+        ->json($request->all());
 
         $item = Dossier::create([
             'inscription_id' => Auth::id(),
@@ -140,6 +281,11 @@ class DossierController extends LaravelController
             'dossier_id' => $request->dossier_id,
             'couleur' => $request->couleur
         ]);
+
+        if($request->has('dossier_id')) {
+            $node->dossier_id = $request->dossier_id;
+            $node->save();
+        }
 
         $element = new GedElement();
         $item->ged_element()->save($element);
@@ -256,7 +402,6 @@ class DossierController extends LaravelController
             }
             DB::commit();
         } catch (\Throwable $e) {
-
             DB::rollback();
             throw $e;
         }
@@ -268,8 +413,8 @@ class DossierController extends LaravelController
     }
 
     public function doSetAffectation($id, $affectation) {
+        
         $item = Dossier::find($id);
-
         $result = null;
 
         foreach($affectation as $key=>$value)

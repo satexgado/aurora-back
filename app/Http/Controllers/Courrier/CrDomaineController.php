@@ -49,7 +49,12 @@ class CrDomaineController extends LaravelController
     public function filterSearchString(myBuilder $query, $method, $clauseOperator, $value)
     {
         if($value) {
-            $query->orWhere('libelle', 'like', "%" .$value . "%");
+            $words = explode(" ", $value);
+            $query->where(function ($query) use($words) {
+                for ($i = 0; $i < count($words); $i++){
+                   $query->where('libelle', 'like',  '%' . $words[$i] .'%');
+                }      
+           });
         }
     }
 

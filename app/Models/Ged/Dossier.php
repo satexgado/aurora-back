@@ -9,6 +9,7 @@ namespace App\Models\Ged;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Facades\Auth;
+use Kalnoy\Nestedset\NodeTrait;
 
 /**
  * Class Dossier
@@ -29,6 +30,7 @@ use Illuminate\Support\Facades\Auth;
 class Dossier extends Eloquent
 {
 	use \Illuminate\Database\Eloquent\SoftDeletes;
+	use NodeTrait;
 	protected $table = 'dossier';
 
 	protected $casts = [
@@ -49,6 +51,17 @@ class Dossier extends Eloquent
 	protected $appends = ['nb_element', 'size', 'is_user'];
 
     protected $with = ['inscription', 'ged_element'];
+
+	  
+    public function getParentKeyName()
+    {
+        return 'dossier_id';
+    }
+
+	public function getParentIdName()
+	{
+		return 'dossier_id';
+	}
 
     public function getSizeAttribute()
 	{
@@ -94,12 +107,61 @@ class Dossier extends Eloquent
 
     public function dossier()
 	{
-		return $this->belongsTo(\App\Models\Ged\Dossier::class, 'dossier_id')->with('dossier.ged_element');
+		// return $this->descendants()->with('ged_element');
+		return $this->belongsTo(\App\Models\Ged\Dossier::class, 'dossier_id')->where(function($query){
+			$query->where(function($query){
+                $query->where('inscription_id', Auth::id());
+                $query->doesnthave('ged_element.structures');
+            });  
+
+			$query->orWhere(function($query) {
+                $query->whereHas('ancestors', function($query) {
+                    $query->where(function($query){
+                        $query->where('inscription_id', Auth::id());
+                        $query->doesnthave('ged_element.structures');
+                    });  
+                    $query->orWhere(function($query){
+                        $query->whereHas('ged_element.partage_a_personnes', function($query) {
+                            $query->where('ged_partage.personne', Auth::id());
+                            $query->where('ged_element.cacher', '!=', 1);
+                         });
+                    });  
+                });
+            });
+
+            $query->orWhere(function($query){
+                $query->whereHas('ged_element.partage_a_personnes', function($query) {
+                    $query->where('ged_partage.personne', Auth::id());
+					$query->where('ged_element.cacher', '!=', 1);
+                 });
+            });  
+		})->with('dossier.ged_element');
 	}
 
 	public function dossiers()
 	{
 		// return $this->hasMany(\App\Models\Ged\Dossier::class, 'dossier_id');
+		return $this->ancestors()->where(function($query){
+			$query->where(function($query){
+                $query->where('inscription_id', Auth::id());
+                $query->doesnthave('ged_element.structures');
+            });  
+
+			$query->orWhere(function($query) {
+                $query->whereHas('ancestors', function($query) {
+                    $query->whereHas('ged_element.partage_a_personnes', function($query) {
+                        $query->where('ged_partage.personne', Auth::id());
+                     });
+                });
+            });
+
+            $query->orWhere(function($query){
+                $query->whereHas('ged_element.partage_a_personnes', function($query) {
+                    $query->where('ged_partage.personne', Auth::id());
+                 });
+            });  
+		});
+
 		return $this->hasMany(\App\Models\Ged\Dossier::class, 'dossier_id')->with('dossiers.ged_element');
 	}
 
