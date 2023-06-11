@@ -5,6 +5,7 @@ use App\Http\Controllers\Authorization\RoleController;
 use App\Http\Controllers\ConditionsUtilisationController;
 use App\Http\Controllers\CourrierController;
 use App\Http\Controllers\Ged\DossierController;
+use App\Http\Controllers\Ged\GedPartageController;
 use App\Http\Controllers\InscriptionController;
 use App\Http\Controllers\Messagerie\DiscussionController;
 use App\Http\Controllers\Messagerie\ReactionController;
@@ -97,6 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
     /* ** SAT Ecriture permission Start * **/
     /* ** ************************************* * **/
 
+    Route::post('ged-partages/multi', [GedPartageController::class, 'multistore'])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('dossiers', 'Ged\DossierController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('fichiers', 'Ged\FichierController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('fichier-types', 'Ged\FichierTypeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");

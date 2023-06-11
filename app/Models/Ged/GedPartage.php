@@ -38,7 +38,8 @@ class GedPartage extends Eloquent
 	protected $fillable = [
 		'personne',
 		'element',
-		'inscription_id'
+		'inscription_id',
+		'access'
 	];
 
 	public function ged_element()

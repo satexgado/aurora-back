@@ -63,10 +63,43 @@ class GedPartageController extends LaravelController
         $item = GedPartage::create([
             'inscription_id' => Auth::id(),
             'personne' => $request->personne,
+            'element' => $request->element,
+    		'access' => $request->access
         ]);
 
         return response()
         ->json($item);
+    }
+
+    public function multistore(Request $request)
+    {
+        DB::beginTransaction();
+        $result = array();
+
+        try { 
+            if($request->exists('partages'))
+            {
+                $json = utf8_encode($request->partages);
+                $data = json_decode($json);
+                if(is_array($data)){
+                    foreach($data as $element) {
+                        $result[] = GedPartage::create([
+                            'inscription_id' => Auth::id(),
+                            'personne' => $element->personne,
+                            'element' => $element->element,
+                            'access' => $element->access
+                        ]);
+                    }
+                }
+            }
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollback();
+            throw $e;
+        }
+
+        return response()
+        ->json($result);
     }
 
     public function update(Request $request, $id)

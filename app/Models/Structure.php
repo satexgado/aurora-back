@@ -71,7 +71,7 @@ class Structure extends Eloquent
         $id = $this->attributes['id'];
         return Dossier::whereHas('ged_element.structures', function ($query) use ($id) {
             $query->where('structures.id', $id);
-        })->with('dossiers')->get();
+        })->with('dossiers')->whereNull('dossier_id')->get();
     }
 
     public function inscription()

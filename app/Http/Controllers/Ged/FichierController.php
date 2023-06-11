@@ -295,9 +295,11 @@ class FichierController extends LaravelController
 
             $element = new GedElement();
             $item->ged_element()->save($element);
-            $relation_name = $request->relation_name;
-            $relation_id = $request->relation_id;
-            $item->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
+            if($request->has('relation_name') && $request->has('relation_id')) {
+                $relation_name = $request->relation_name;
+                $relation_id = $request->relation_id;
+                $item->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
+            }
         DB::commit();
         } catch (\Throwable $e) {
             DB::rollback();
@@ -332,9 +334,12 @@ class FichierController extends LaravelController
                         $element = new GedElement();
                         $fichier->ged_element()->save($element);
 
-                        $relation_name = $request->relation_name;
-                        $relation_id = $request->relation_id;
-                        $fichier->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
+                        if($request->has('relation_name') && $request->has('relation_id')) {
+                            $relation_name = $request->relation_name;
+                            $relation_id = $request->relation_id;
+                            $fichier->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
+                        }
+                    
                     }
                 }
             }
