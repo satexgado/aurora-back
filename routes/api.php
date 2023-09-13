@@ -5,6 +5,7 @@ use App\Http\Controllers\Authorization\RoleController;
 use App\Http\Controllers\ConditionsUtilisationController;
 use App\Http\Controllers\CourrierController;
 use App\Http\Controllers\Ged\DossierController;
+use App\Http\Controllers\Ged\FichierController;
 use App\Http\Controllers\Ged\GedPartageController;
 use App\Http\Controllers\InscriptionController;
 use App\Http\Controllers\Messagerie\DiscussionController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Structure\PosteController;
 use App\Http\Controllers\Structure\StructureController;
 use App\Http\Controllers\Structure\TypeStructureController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\IconController;
 use App\Http\Controllers\FormDependanciesController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +37,8 @@ use Illuminate\Support\Facades\Route;
 // Route::get('users/{id}', [InscriptionController::class, 'show']);
 Route::get('test', [InscriptionController::class, 'test']);
 Route::get('structures/all', [StructureController::class, 'all']);
+
+Route::get('icon/{subfolder?}', [IconController::class, 'getIcon']);
 
 
 Route::get('conditions-utilisations', [ConditionsUtilisationController::class, 'show']);
@@ -97,7 +101,8 @@ Route::middleware('auth:sanctum')->group(function () {
     /* ** *************************************  * **/
     /* ** SAT Ecriture permission Start * **/
     /* ** ************************************* * **/
-
+    Route::post('fichiers/dowload-multi', [FichierController::class, 'dowloadZip'])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
+    Route::get('fichiers/dowload-folder/{id}', [FichierController::class, 'dowloadFolder'])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::post('ged-partages/multi', [GedPartageController::class, 'multistore'])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('dossiers', 'Ged\DossierController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('fichiers', 'Ged\FichierController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
@@ -106,9 +111,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::customResource('ged-elements', 'Ged\GedElementController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('ged-modeles', 'Ged\GedModeleController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('ged-partages', 'Ged\GedPartageController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
+    Route::customResource('ged-dossier-administratifs', 'Ged\GedDossierAdministratifController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
 
     Route::prefix('courrier')->group(function () {
-
+        
         Route::customResource('coordonnees', 'Courrier\CrCoordonneeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,annuaire:ECRITURE");
         Route::customResource('coordonnee-groupes', 'Courrier\CrCoordonneeGroupeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,annuaire:ECRITURE");
 
@@ -185,6 +191,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::customResource('ged-elements', 'Ged\GedElementController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
     Route::customResource('ged-modeles', 'Ged\GedModeleController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
     Route::customResource('ged-partages', 'Ged\GedPartageController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
+    Route::customResource('ged-dossier-administratifs', 'Ged\GedDossierAdministratifController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
 
     Route::prefix('courrier')->group(function () {
 

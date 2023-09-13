@@ -7,11 +7,16 @@ use Illuminate\Database\Eloquent\Builder as myBuilder;
 use App\Http\Shared\Optimus\Bruno\EloquentBuilderTrait;
 use App\Http\Shared\Optimus\Bruno\LaravelController;
 use App\Models\Ged\Fichier;
+use App\Models\Ged\FichierNLink;
+use App\Models\Ged\DossierNLink;
 use App\Models\Ged\FichierType;
 use App\Models\Ged\GedElement;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use ZipArchive;
+use Illuminate\Support\Facades\File;
 
 class FichierController extends LaravelController
 {
@@ -77,6 +82,24 @@ class FichierController extends LaravelController
              });
         }
     }
+    
+    public function filterStructures(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->whereHas('ged_element.structures', function($query) use ($value) {
+                $query->where('structures.id', $value);
+            });
+        }
+    }
+
+    public function filterDossierAdministratifs(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->whereHas('ged_element.dossier_administratifs', function($query) use ($value) {
+                $query->where('ged_dossier_admistratif.id', $value);
+            });
+        }
+    }
 
     public function filterNoParent(myBuilder $query, $method, $clauseOperator, $value, $in)
     {
@@ -93,6 +116,9 @@ class FichierController extends LaravelController
                 $query->whereHas('ged_element.partage_a_personnes', function($query) {
                     $query->where('ged_partage.personne', Auth::id());
                  });
+                 $query->whereHas('ged_element', function($query) {
+                    $query->where('ged_element.cacher', '!=', 1);
+                });
             });
 
             $query->orWhere(function($query){
@@ -124,7 +150,50 @@ class FichierController extends LaravelController
                 $query->whereHas('ged_element.partage_a_personnes', function($query) {
                     $query->where('ged_partage.personne', Auth::id());
                  });
+                 $query->whereHas('ged_element', function($query) {
+                    $query->where('ged_element.cacher', '!=', 1);
+                });
             });            
+        }
+    }
+
+    public function filterOwnerAllParent(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+
+            $query->doesntHave('dossiers');
+
+            $query->where(function($query) {
+                $query->where(function($query) {
+                    $query->where('inscription_id', '!=',Auth::id());
+                     $query->whereHas('ged_element', function($query) {
+                        $query->where('ged_element.cacher', '!=', 1);
+                    });
+                });
+                $query->orWhere(function($query){
+                    $query->where('inscription_id', Auth::id()); 
+                }); 
+            });  
+            
+        }
+    }
+
+    public function filterOwnerMineParent(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->doesntHave('dossiers');
+            $query->where('inscription_id', Auth::id());
+        }
+    }
+
+    public function filterOwnerSharedParent(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->doesntHave('dossiers');
+            $query->where('inscription_id', '!=',Auth::id());
+            $query->whereHas('ged_element', function($query) {
+                $query->where('ged_element.cacher', '!=', 1);
+            });    
         }
     }
 
@@ -300,6 +369,12 @@ class FichierController extends LaravelController
                 $relation_id = $request->relation_id;
                 $item->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
             }
+
+            if($request->has('gedRelation_name') && $request->has('gedRelation_id')) {
+                $gedRelation_name = $request->gedRelation_name;
+                $gedRelation_id = $request->gedRelation_id;
+                $item->ged_element->{$gedRelation_name}()->syncWithoutDetaching([$gedRelation_id => ['inscription_id'=> Auth::id()]]);
+            }
         DB::commit();
         } catch (\Throwable $e) {
             DB::rollback();
@@ -339,6 +414,11 @@ class FichierController extends LaravelController
                             $relation_id = $request->relation_id;
                             $fichier->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
                         }
+                        if($request->has('gedRelation_name') && $request->has('gedRelation_id')) {
+                            $gedRelation_name = $request->gedRelation_name;
+                            $gedRelation_id = $request->gedRelation_id;
+                            $fichier->ged_element->{$gedRelation_name}()->syncWithoutDetaching([$gedRelation_id => ['inscription_id'=> Auth::id()]]);
+                        }
                     
                     }
                 }
@@ -368,7 +448,7 @@ class FichierController extends LaravelController
 
     public function destroy($id)
     {
-        $item = Fichier::findOrFail($id);
+        $item = FichierNLink::findOrFail($id);
 
         $item->delete();
 
@@ -474,5 +554,86 @@ class FichierController extends LaravelController
 
         return response()
         ->json(['data' => 'need to update it']);
+    }
+
+    public function dowloadZip(Request $request)
+    {
+
+        $zip = new ZipArchive;
+            $timeName = time();
+            $zipFileName = $timeName . '.zip';
+            $zipPath = asset($zipFileName);
+            if ($zip->open(($zipFileName), ZipArchive::CREATE) === true) {
+                 // Add File in ZipArchive
+
+                $result = FichierNLink::whereIn('id', $request->all())->get();
+                foreach($result as $element)
+                {
+                    $filename = $element->libelle;
+                    if(File::extension($filename) !=  File::extension($element->fichier)) {
+                        $filename = $filename.".".File::extension($element->fichier);
+                    }
+
+                    if(Storage::disk('public')->exists($element->fichier)) {
+                        if (!$zip->addFile("storage/public/".$element->fichier, $filename)) {
+                            echo 'Could not add file to ZIP: ' . $element->libelle;
+                        }
+                    }
+                }
+    
+                $zip->close();
+
+                if ($zip->open($zipFileName) === true) {
+                    return response()->download($zipFileName)->deleteFileAfterSend(true);
+                } else {
+                    return false;
+                }
+            }
+    }
+
+    public function dowloadFolder(Request $request, $id)
+    {
+        $item = DossierNLink::findOrFail($id);
+        $zip = new ZipArchive;
+        $timeName = time();
+        $zipFileName = $timeName . '.zip';
+        $zipPath = asset($zipFileName);
+        if ($zip->open(($zipFileName), ZipArchive::CREATE) === true) {
+                // Add File in ZipArchive
+            $this->addDossierToZip($item, $zip);
+
+            $zip->close();
+
+            if ($zip->open($zipFileName) === true) {
+                return response()->download($zipFileName)->deleteFileAfterSend(true);
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public function addDossierToZip(DossierNLink $dossier, ZipArchive $zip, $parentLink = "") {
+       $fichiers = $dossier->fichiers()->get();
+       $dossiers = $dossier->dossiers()->get();
+
+        foreach($fichiers as $element)
+        {
+            $filename = $parentLink.$dossier->libelle."/".$element->libelle;
+            if(File::extension($filename) !=  File::extension($element->fichier)) {
+                $filename = $filename.".".File::extension($element->fichier);
+            }
+
+            if(Storage::disk('public')->exists($element->fichier)) {
+                if (!$zip->addFile("storage/public/".$element->fichier, $filename)) {
+                    echo 'Could not add file to ZIP: ' . $element->libelle;
+                }
+            }
+        }
+
+        foreach($dossiers as $element)
+        {
+            $this->addDossierToZip($element, $zip, $parentLink.$dossier->libelle."/");
+        }
+    
     }
 }

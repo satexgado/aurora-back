@@ -10,7 +10,7 @@ namespace App\Models\Ged;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
- * Class GedFavori
+ * Class GedDossierAdministratif
  *
  * @property int $id
  * @property int $element
@@ -23,35 +23,26 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  *
  * @package App\Models
  */
-class GedModele extends Eloquent
+class GedDossierAdministratif extends Eloquent
 {
 	use \Illuminate\Database\Eloquent\SoftDeletes;
-	protected $table = 'ged_modele';
+	protected $table = 'ged_dossier_admistratif';
 
 	protected $casts = [
 		'inscription_id' => 'int',
 		'structure_id' => 'int',
-		'active' => 'bool'
 	];
 
 	protected $fillable = [
 		'libelle',
 		'description',
-		'image',
-		'allowed_type',
 		'inscription_id',
 		'structure_id',
-		'active'
 	];
 
 	public function inscription()
 	{
 		return $this->belongsTo(\App\Models\Inscription::class, 'inscription_id');
-	}
-
-	public function ged_modele_form_fields()
-	{
-		return $this->hasMany(\App\Models\Ged\GedModeleFormField::class, 'modele_id');
 	}
 
 	public function structure()

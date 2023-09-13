@@ -64,17 +64,14 @@ class GedModeleController extends LaravelController
 
         try {
 
-            $path = '';
-            if($request->hasFile('image')) {
-                $path = $request->file('image')->store('document/'.date('Y').'/'.date('F'));
-            }
-
         $item = GedModele::create([
             'inscription_id' => Auth::id(),
             'libelle' => $request->libelle,
-            'image' => $path,
+            'image' => $request->image,
             'allowed_type' =>  $request->allowed_type, 
+            'structure_id' =>  $request->structure_id, 
             'description' => $request->description,
+            'active' => $request->active,
         ]);
 
         if($request->exists('form_field'))
@@ -102,7 +99,8 @@ class GedModeleController extends LaravelController
         throw $e;
     }
         return response()
-        ->json($item);
+        ->json($item->load([
+            'structure', 'ged_modele_form_fields']));
     }
 
     public function update(Request $request, $id)
@@ -110,11 +108,6 @@ class GedModeleController extends LaravelController
 
         $item = GedModele::findOrFail($id);
         $data = $request->all();
-
-        if($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('document/'.date('Y').'/'.date('F'));
-        }
-
         $item->fill($data)->save();
 
         if($request->exists('removedFormField'))
@@ -151,7 +144,8 @@ class GedModeleController extends LaravelController
         }
 
         return response()
-        ->json($item);
+        ->json($item->load([
+            'structure', 'ged_modele_form_fields']));
     }
 
     public function destroy($id)

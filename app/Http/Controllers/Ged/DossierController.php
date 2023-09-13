@@ -80,7 +80,26 @@ class DossierController extends LaravelController
         if ($value) {
             $query->whereHas('ged_element.structures', function($query) use ($value) {
                 $query->where('structures.id', $value);
-             });
+            });
+            $query->orWhereHas('ancestors', function($query) use ($value) {
+                $query->whereHas('ged_element.structures', function($query) use ($value) {
+                    $query->where('structures.id', $value);
+                }); 
+            });
+        }
+    }
+
+    public function filterDossierAdministratifs(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->whereHas('ged_element.dossier_administratifs', function($query) use ($value) {
+                $query->where('ged_dossier_admistratif.id', $value);
+            });
+            $query->orWhereHas('ancestors', function($query) use ($value) {
+                $query->whereHas('ged_element.dossier_administratifs', function($query) use ($value) {
+                    $query->where('ged_dossier_admistratif.id', $value);
+                }); 
+            });
         }
     }
 
@@ -159,16 +178,52 @@ class DossierController extends LaravelController
     {
         if ($value) {
 
-            $query->where(function($query) {
-                $query->whereHas('ged_element.partage_a_personnes', function($query) {
-                    $query->where('ged_partage.personne', Auth::id());
-                 });
-            });  
+            $query->whereHas('ged_element.partage_a_personnes', function($query) {
+                $query->where('ged_partage.personne', Auth::id());
+             });
 
             $query->whereHas('ged_element', function($query) {
                 $query->where('ged_element.cacher', '!=', 1);
             });    
 
+        }
+    }
+
+    public function filterOwnerAllParent(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+
+            $query->doesntHave('dossier');
+            $query->where(function($query) {
+                $query->where(function($query) {
+                    $query->where('inscription_id', '!=',Auth::id());
+                     $query->whereHas('ged_element', function($query) {
+                        $query->where('ged_element.cacher', '!=', 1);
+                    });
+                });
+                $query->orWhere(function($query){
+                    $query->where('inscription_id', Auth::id()); 
+                }); 
+            });  
+        }
+    }
+
+    public function filterOwnerMineParent(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->doesntHave('dossier');
+            $query->where('inscription_id', Auth::id());
+        }
+    }
+
+    public function filterOwnerSharedParent(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->doesntHave('dossiers');
+            $query->where('inscription_id', '!=',Auth::id());
+            $query->whereHas('ged_element', function($query) {
+                $query->where('ged_element.cacher', '!=', 1);
+            });
         }
     }
 
@@ -270,9 +325,7 @@ class DossierController extends LaravelController
 
     public function store(Request $request)
     {
-        return response()
-        ->json($request->all());
-
+       
         $item = Dossier::create([
             'inscription_id' => Auth::id(),
             'libelle' => $request->libelle,
@@ -282,13 +335,19 @@ class DossierController extends LaravelController
             'couleur' => $request->couleur
         ]);
 
-        if($request->has('dossier_id')) {
-            $node->dossier_id = $request->dossier_id;
-            $node->save();
-        }
+        // if($request->has('dossier_id')) {
+        //     $node->dossier_id = $request->dossier_id;
+        //     $node->save();
+        // }
 
         $element = new GedElement();
         $item->ged_element()->save($element);
+
+        if($request->has('relation_name') && $request->has('relation_id')) {
+            $relation_name = $request->relation_name;
+            $relation_id = $request->relation_id;
+            $item->ged_element->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
+        }
 
         return response()
         ->json($item->load('ged_element'));

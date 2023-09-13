@@ -6,11 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder as myBuilder;
 use App\Http\Shared\Optimus\Bruno\EloquentBuilderTrait;
 use App\Http\Shared\Optimus\Bruno\LaravelController;
-use App\Models\Ged\GedPartage;
+use App\Models\Ged\GedDossierAdministratif;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
-class GedPartageController extends LaravelController
+class GedDossierAdministratifController extends LaravelController
 {
     use EloquentBuilderTrait;
 
@@ -20,7 +21,7 @@ class GedPartageController extends LaravelController
         // Parse the resource options given by GET parameters
         $resourceOptions = $this->parseResourceOptions();
 
-        $query = GedPartage::query();
+        $query = GedDossierAdministratif::query();
         $this->applyResourceOptions($query, $resourceOptions);
 
         if(isset($request->paginate)) {
@@ -60,83 +61,34 @@ class GedPartageController extends LaravelController
     public function store(Request $request)
     {
 
-        $item = GedPartage::create([
+        $item = GedDossierAdministratif::create([
             'inscription_id' => Auth::id(),
-            'personne' => $request->personne,
-            'element' => $request->element,
-    		'access' => $request->access
+            'libelle' => $request->libelle,
+            'description' => $request->description,
+            'structure_id' => $request->structure_id,
         ]);
 
         return response()
-        ->json($item);
-    }
-
-    public function multistore(Request $request)
-    {
-
-        DB::beginTransaction();
-        $result = array();
-
-        try { 
-            
-            if($request->exists('removedPartages'))
-            {
-                // $json = utf8_encode($request->removedPartages);
-                // $data = json_decode($json);
-                if(is_array($request->removedPartages)){
-                    foreach($request->removedPartages as $element) {
-                        $remove = GedPartage::find($element);
-                        if($remove) {
-                            $remove->delete();
-                        }
-                    }
-                }
-            }
-
-            if($request->exists('partages'))
-            {
-                // $json = utf8_encode($request->partages);
-                // $data = json_decode($json);
-                if(is_array($request->partages)){
-                    foreach($request->partages as $element) {
-                        $result[] = GedPartage::updateOrCreate([
-                        'id' => $element['id'],
-                        ],[
-                            'inscription_id' => Auth::id(),
-                            'personne' => $element['personne'],
-                            'element' => $element['element_id'],
-                            'access' => $element['access']
-                        ]);
-                    }
-                }
-            }
-
-            DB::commit();
-        } catch (\Throwable $e) {
-            DB::rollback();
-            throw $e;
-        }
-
-        return response()
-        ->json($result);
+        ->json($item->load([
+            'structure']));
     }
 
     public function update(Request $request, $id)
     {
 
-        $item = GedPartage::findOrFail($id);
-
+        $item = GedDossierAdministratif::findOrFail($id);
         $data = $request->all();
 
         $item->fill($data)->save();
 
         return response()
-        ->json($item);
+        ->json($item->load([
+            'structure']));
     }
 
     public function destroy($id)
     {
-        $item = GedPartage::findOrFail($id);
+        $item = GedDossierAdministratif::findOrFail($id);
 
         $item->delete();
 
@@ -144,10 +96,9 @@ class GedPartageController extends LaravelController
         ->json(['msg' => 'Suppression effectué']);
     }
 
-
     public function restore($id)
     {
-        $restoreDataId = GedPartage::withTrashed()->findOrFail($id);
+        $restoreDataId = GedDossierAdministratif::withTrashed()->findOrFail($id);
         if($restoreDataId && $restoreDataId->trashed()){
            $restoreDataId->restore();
         }
@@ -161,7 +112,7 @@ class GedPartageController extends LaravelController
         $item_id = $request->id;
         $relation_name = $request->relation_name;
         $relation_id = $request->relation_id;
-        $item = GedPartage::find($item_id);
+        $item = GedDossierAdministratif::find($item_id);
         $item->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
 
         return response()->json([
@@ -174,7 +125,7 @@ class GedPartageController extends LaravelController
         $item_id = $request->id;
         $relation_name = $request->relation_name;
         $relation_id = $request->relation_id;
-        $item = GedPartage::find($item_id);
+        $item = GedDossierAdministratif::find($item_id);
         $item->{$relation_name}()->detach($relation_id);
 
         return response()->json([
@@ -186,20 +137,18 @@ class GedPartageController extends LaravelController
     public function setAffectation(Request $request)
     {
         $item_id = $request->id;
-        $result = null;
         DB::beginTransaction();
+        $result = array();
+
 
         try {
-
-            $item = GedPartage::find($item_id);
-
-            foreach($request->affectation as $key=>$value)
-            {
-                $pivotData = array_fill(0, count($value), ['inscription_id'=> Auth::id()]);
-                $syncData  = array_combine($value, $pivotData);
-                $result = $item->{$key}()->sync($syncData);
+            if(is_array($item_id)) {
+                foreach($item_id as $id) {
+                    $result[$id] = $this->doSetAffectation($id, $request->affectation);
+                }
+            } else {
+                $result[$item_id] = $this->doSetAffectation($item_id, $request->affectation);
             }
-
             DB::commit();
         } catch (\Throwable $e) {
 
@@ -213,7 +162,22 @@ class GedPartageController extends LaravelController
         ]);
     }
 
-    public function getAffectation(GedPartage $GedPartage)
+    public function doSetAffectation($id, $affectation) {
+        $item = GedDossierAdministratif::find($id);
+
+        $result = null;
+
+        foreach($affectation as $key=>$value)
+        {
+            $pivotData = array_fill(0, count($value), ['inscription_id'=> Auth::id()]);
+            $syncData  = array_combine($value, $pivotData);
+            $result = $item->{$key}()->sync($syncData);
+        }
+
+        return $result;
+    }
+
+    public function getAffectation(GedDossierAdministratif $GedDossierAdministratif)
     {
 
         return response()

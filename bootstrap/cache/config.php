@@ -182,7 +182,7 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => 'C:\\Users\\DELL\\Documents\\Aurora\\aurora-back\\storage\\framework/cache/data',
+        'path' => 'C:\\Users\\XPS\\OneDrive\\Documents\\Workspace\\Save up\\Aurora\\aurora-back\\storage\\framework/cache/data',
       ),
       'memcached' => 
       array (
@@ -349,12 +349,12 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Users\\DELL\\Documents\\Aurora\\aurora-back\\storage\\app',
+        'root' => 'C:\\Users\\XPS\\OneDrive\\Documents\\Workspace\\Save up\\Aurora\\aurora-back\\storage\\app',
       ),
       'public' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Users\\DELL\\Documents\\Aurora\\aurora-back\\storage\\app/public',
+        'root' => 'C:\\Users\\XPS\\OneDrive\\Documents\\Workspace\\Save up\\Aurora\\aurora-back\\storage\\app/public',
         'url' => 'https://backend.sigecam.org/storage',
         'visibility' => 'public',
       ),
@@ -371,7 +371,7 @@
     ),
     'links' => 
     array (
-      'C:\\Users\\DELL\\Documents\\Aurora\\aurora-back\\public\\storage' => 'C:\\Users\\DELL\\Documents\\Aurora\\aurora-back\\storage\\app',
+      'C:\\Users\\XPS\\OneDrive\\Documents\\Workspace\\Save up\\Aurora\\aurora-back\\public\\storage' => 'C:\\Users\\XPS\\OneDrive\\Documents\\Workspace\\Save up\\Aurora\\aurora-back\\storage\\app',
     ),
   ),
   'hashing' => 
@@ -405,13 +405,13 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => 'C:\\Users\\DELL\\Documents\\Aurora\\aurora-back\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\XPS\\OneDrive\\Documents\\Workspace\\Save up\\Aurora\\aurora-back\\storage\\logs/laravel.log',
         'level' => 'debug',
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'C:\\Users\\DELL\\Documents\\Aurora\\aurora-back\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\XPS\\OneDrive\\Documents\\Workspace\\Save up\\Aurora\\aurora-back\\storage\\logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
       ),
@@ -461,7 +461,7 @@
       ),
       'emergency' => 
       array (
-        'path' => 'C:\\Users\\DELL\\Documents\\Aurora\\aurora-back\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\XPS\\OneDrive\\Documents\\Workspace\\Save up\\Aurora\\aurora-back\\storage\\logs/laravel.log',
       ),
     ),
   ),
@@ -518,7 +518,7 @@
       'theme' => 'default',
       'paths' => 
       array (
-        0 => 'C:\\Users\\DELL\\Documents\\Aurora\\aurora-back\\resources\\views/vendor/mail',
+        0 => 'C:\\Users\\XPS\\OneDrive\\Documents\\Workspace\\Save up\\Aurora\\aurora-back\\resources\\views/vendor/mail',
       ),
     ),
   ),
@@ -619,7 +619,7 @@
     'lifetime' => '120',
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'C:\\Users\\DELL\\Documents\\Aurora\\aurora-back\\storage\\framework/sessions',
+    'files' => 'C:\\Users\\XPS\\OneDrive\\Documents\\Workspace\\Save up\\Aurora\\aurora-back\\storage\\framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -639,49 +639,9 @@
   array (
     'paths' => 
     array (
-      0 => 'C:\\Users\\DELL\\Documents\\Aurora\\aurora-back\\resources\\views',
+      0 => 'C:\\Users\\XPS\\OneDrive\\Documents\\Workspace\\Save up\\Aurora\\aurora-back\\resources\\views',
     ),
-    'compiled' => 'C:\\Users\\DELL\\Documents\\Aurora\\aurora-back\\storage\\framework\\views',
-  ),
-  'flare' => 
-  array (
-    'key' => NULL,
-    'reporting' => 
-    array (
-      'anonymize_ips' => true,
-      'collect_git_information' => false,
-      'report_queries' => true,
-      'maximum_number_of_collected_queries' => 200,
-      'report_query_bindings' => true,
-      'report_view_data' => true,
-      'grouping_type' => NULL,
-      'report_logs' => true,
-      'maximum_number_of_collected_logs' => 200,
-      'censor_request_body_fields' => 
-      array (
-        0 => 'password',
-      ),
-    ),
-    'send_logs_as_events' => true,
-    'censor_request_body_fields' => 
-    array (
-      0 => 'password',
-    ),
-  ),
-  'ignition' => 
-  array (
-    'editor' => 'phpstorm',
-    'theme' => 'light',
-    'enable_share_button' => true,
-    'register_commands' => false,
-    'ignored_solution_providers' => 
-    array (
-      0 => 'Facade\\Ignition\\SolutionProviders\\MissingPackageSolutionProvider',
-    ),
-    'enable_runnable_solutions' => NULL,
-    'remote_sites_path' => '',
-    'local_sites_path' => '',
-    'housekeeping_endpoint_prefix' => '_ignition',
+    'compiled' => 'C:\\Users\\XPS\\OneDrive\\Documents\\Workspace\\Save up\\Aurora\\aurora-back\\storage\\framework\\views',
   ),
   'trustedproxy' => 
   array (

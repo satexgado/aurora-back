@@ -89,8 +89,6 @@ class Structure extends Eloquent
         return $this->belongsTo(\App\Models\TypeStructure::class, 'type');
     }
 
-
-
     public function affectation_structures()
     {
         return $this->hasMany(\App\Models\AffectationStructure::class, 'structure');

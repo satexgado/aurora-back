@@ -94,6 +94,13 @@ class GedElement extends Eloquent
 					->withTimestamps();
 	}
 
+	public function dossier_administratifs()
+	{
+		return $this->belongsToMany(\App\Models\Ged\GedDossierAdministratif::class, 'ged_element_dossier_administratif', 'element', 'dossier_administratif')
+					->withPivot('id', 'inscription', 'deleted_at')
+					->withTimestamps();
+	}
+
 	public function ged_favoris()
 	{
 		return $this->hasMany(\App\Models\Ged\GedFavori::class, 'element');

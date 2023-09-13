@@ -70,9 +70,7 @@ class CrDossierController extends LaravelController
         ]);
 
         return response()
-        ->json($item->load([
-            // 'cr_courriers','responsable_inscription',
-            'structure']));
+        ->json($item->load(['structure']));
     }
 
     public function update(Request $request, $id)

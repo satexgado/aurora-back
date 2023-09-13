@@ -9,7 +9,6 @@ namespace App\Models\Ged;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Facades\Auth;
-use Kalnoy\Nestedset\NodeTrait;
 
 /**
  * Class Dossier
@@ -27,10 +26,9 @@ use Kalnoy\Nestedset\NodeTrait;
  *
  * @package App\Models
  */
-class Dossier extends Eloquent
+class DossierNLink extends Eloquent
 {
 	use \Illuminate\Database\Eloquent\SoftDeletes;
-	use NodeTrait;
 	protected $table = 'dossier';
 
 	protected $casts = [
@@ -63,31 +61,8 @@ class Dossier extends Eloquent
 		return 'dossier_id';
 	}
 
-    public function getSizeAttribute()
-	{
-        $sum = 0; //This specific models count
-        foreach($this->fichiers as $child){
-            $sum += $child->size; //Sum up the count
-        }
-		foreach($this->dossiers as $child){
-            $sum += $child->size; //Sum up the count
-        }
-		return $sum;
-    }
 
-    public function getIsUserAttribute()
-	{
-		if(Auth::check() && $this->attributes['inscription_id'] == Auth::id())
-		{
-			return true;
-		}
-		return false;
-	}
-
-    public function getNbElementAttribute()
-	{
-     return $this->dossiers()->count() + $this->fichiers()->count();
-    }
+ 
 
 
 	public function ged_conservation_rule()
@@ -111,19 +86,14 @@ class Dossier extends Eloquent
 		return $this->belongsTo(\App\Models\Ged\Dossier::class, 'dossier_id')->where(function($query){
 			$query->where(function($query){
                 $query->where('inscription_id', Auth::id());
-            });  
-
-            $query->orWhere(function($query){
-                $query->whereHas('ged_element.partage_a_personnes', function($query) {
-                    $query->where('ged_partage.personne', Auth::id());
-					$query->where('ged_element.cacher', '!=', 1);
-                 });
+                $query->doesnthave('ged_element.structures');
             });  
 
 			$query->orWhere(function($query) {
                 $query->whereHas('ancestors', function($query) {
                     $query->where(function($query){
                         $query->where('inscription_id', Auth::id());
+                        $query->doesnthave('ged_element.structures');
                     });  
                     $query->orWhere(function($query){
                         $query->whereHas('ged_element.partage_a_personnes', function($query) {
@@ -134,38 +104,22 @@ class Dossier extends Eloquent
                 });
             });
 
+            $query->orWhere(function($query){
+                $query->whereHas('ged_element.partage_a_personnes', function($query) {
+                    $query->where('ged_partage.personne', Auth::id());
+					$query->where('ged_element.cacher', '!=', 1);
+                 });
+            });  
 		})->with('dossier.ged_element');
 	}
 
 	public function dossiers()
 	{
-		// return $this->hasMany(\App\Models\Ged\Dossier::class, 'dossier_id');
-		// return $this->ancestors()->where(function($query){
-		// 	$query->where(function($query){
-        //         $query->where('inscription_id', Auth::id());
-        //         $query->doesnthave('ged_element.structures');
-        //     });  
-
-		// 	$query->orWhere(function($query) {
-        //         $query->whereHas('ancestors', function($query) {
-        //             $query->whereHas('ged_element.partage_a_personnes', function($query) {
-        //                 $query->where('ged_partage.personne', Auth::id());
-        //              });
-        //         });
-        //     });
-
-        //     $query->orWhere(function($query){
-        //         $query->whereHas('ged_element.partage_a_personnes', function($query) {
-        //             $query->where('ged_partage.personne', Auth::id());
-        //          });
-        //     });  
-		// });
-
-		return $this->hasMany(\App\Models\Ged\Dossier::class, 'dossier_id')->with('dossiers.ged_element');
+		return $this->hasMany(\App\Models\Ged\DossierNLink::class, 'dossier_id');
 	}
 
     public function fichiers()
 	{
-		return $this->belongsToMany(\App\Models\Ged\Fichier::class, 'fichier_dossier', 'dossier_id', 'fichier_id');
+		return $this->belongsToMany(\App\Models\Ged\FichierNLink::class, 'fichier_dossier', 'dossier_id', 'fichier_id');
 	}
 }

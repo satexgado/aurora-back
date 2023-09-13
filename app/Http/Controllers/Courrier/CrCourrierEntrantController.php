@@ -53,7 +53,7 @@ class CrCourrierEntrantController extends LaravelController
      public function sortGrpValeurNbcourrier(myBuilder $query,  $value) {
         if ($value) {
             $query->selectRaw('"Nombre de courriers" as libelle,  count(*) data');
-            }
+        }
     }
 
     public function sortGrpMoisNbcourrier(myBuilder $query,  $value) {
