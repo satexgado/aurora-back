@@ -101,6 +101,13 @@ class GedElement extends Eloquent
 					->withTimestamps();
 	}
 
+	public function ged_modeles()
+	{
+		return $this->belongsToMany(\App\Models\Ged\GedModele::class, 'ged_element_modele', 'element', 'modele')
+					->withPivot('id', 'inscription', 'deleted_at')
+					->withTimestamps();
+	}
+
 	public function ged_favoris()
 	{
 		return $this->hasMany(\App\Models\Ged\GedFavori::class, 'element');

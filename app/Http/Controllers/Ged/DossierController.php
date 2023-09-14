@@ -103,6 +103,20 @@ class DossierController extends LaravelController
         }
     }
 
+    public function filterModeles(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->whereHas('ged_element.ged_modeles', function($query) use ($value) {
+                $query->where('ged_modele.id', $value);
+            });
+            $query->orWhereHas('ancestors', function($query) use ($value) {
+                $query->whereHas('ged_element.ged_modeles', function($query) use ($value) {
+                    $query->where('ged_modele.id', $value);
+                }); 
+            });
+        }
+    }
+
 
     public function filterBelongToStructureId(myBuilder $query, $method, $clauseOperator, $value, $in)
     {

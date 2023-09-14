@@ -101,6 +101,15 @@ class FichierController extends LaravelController
         }
     }
 
+    public function filterModeles(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->whereHas('ged_element.ged_modeles', function($query) use ($value) {
+                $query->where('ged_modele.id', $value);
+            });
+        }
+    }
+
     public function filterNoParent(myBuilder $query, $method, $clauseOperator, $value, $in)
     {
         if ($value) {
