@@ -339,30 +339,40 @@ class DossierController extends LaravelController
 
     public function store(Request $request)
     {
+        DB::beginTransaction();
+
+        try {
+
        
-        $item = Dossier::create([
-            'inscription_id' => Auth::id(),
-            'libelle' => $request->libelle,
-            'description' => $request->description,
-            'conservation_id' => $request->conservation_id,
-            'dossier_id' => $request->dossier_id,
-            'couleur' => $request->couleur
-        ]);
+            $item = Dossier::create([
+                'inscription_id' => Auth::id(),
+                'libelle' => $request->libelle,
+                'description' => $request->description,
+                'conservation_id' => $request->conservation_id,
+                'dossier_id' => $request->dossier_id,
+                'couleur' => $request->couleur
+            ]);
 
-        // if($request->has('dossier_id')) {
-        //     $node->dossier_id = $request->dossier_id;
-        //     $node->save();
-        // }
+            // if($request->has('dossier_id')) {
+            //     $node->dossier_id = $request->dossier_id;
+            //     $node->save();
+            // }
 
-        $element = new GedElement();
-        $item->ged_element()->save($element);
+            $element = new GedElement();
+            $item->ged_element()->save($element);
 
-        if($request->has('relation_name') && $request->has('relation_id')) {
-            $relation_name = $request->relation_name;
-            $relation_id = $request->relation_id;
-            $item->ged_element->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
+            if($request->has('relation_name') && $request->has('relation_id')) {
+                $relation_name = $request->relation_name;
+                $relation_id = $request->relation_id;
+                $item->ged_element->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
+            }
+
+            DB::commit();
+        } catch (\Throwable $e) {
+
+            DB::rollback();
+            throw $e;
         }
-
         return response()
         ->json($item->load('ged_element'));
     }

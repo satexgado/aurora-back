@@ -112,6 +112,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::customResource('ged-modeles', 'Ged\GedModeleController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('ged-partages', 'Ged\GedPartageController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('ged-dossier-administratifs', 'Ged\GedDossierAdministratifController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
+    Route::customResource('ged-workspaces', 'Ged\GedWorkspaceController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
+    Route::customResource('ged-workspace-coordonnees', 'Ged\GedWorkspaceCoordonneeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
+    Route::customResource('ged-workspace-users', 'Ged\GedWorkspaceUserController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
+    Route::customResource('ged-workspace-groupes', 'Ged\GedWorkspaceGroupeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
 
     Route::prefix('courrier')->group(function () {
         
@@ -192,6 +196,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::customResource('ged-modeles', 'Ged\GedModeleController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
     Route::customResource('ged-partages', 'Ged\GedPartageController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
     Route::customResource('ged-dossier-administratifs', 'Ged\GedDossierAdministratifController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
+    Route::customResource('ged-workspaces', 'Ged\GedWorkspaceController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
+    Route::customResource('ged-workspace-coordonnees', 'Ged\GedWorkspaceCoordonneeController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
+    Route::customResource('ged-workspace-users', 'Ged\GedWorkspaceUserController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
+    Route::customResource('ged-workspace-groupes', 'Ged\GedWorkspaceGroupeController', ['only' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:LECTURE");
 
     Route::prefix('courrier')->group(function () {
 
