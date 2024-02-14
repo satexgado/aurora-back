@@ -89,6 +89,34 @@ class DossierController extends LaravelController
         }
     }
 
+    public function filterWorkspaceUsers(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->whereHas('ged_element.workspace_users', function($query) use ($value) {
+                $query->where('ged_workspace_user.id', $value);
+            });
+            $query->orWhereHas('ancestors', function($query) use ($value) {
+                $query->whereHas('ged_element.workspace_users', function($query) use ($value) {
+                    $query->where('ged_workspace_user.id', $value);
+                }); 
+            });
+        }
+    }
+
+    public function filterWorkspaceCoordonnees(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value) {
+            $query->whereHas('ged_element.workspace_coordonnees', function($query) use ($value) {
+                $query->where('ged_workspace_coordonnee.id', $value);
+            });
+            $query->orWhereHas('ancestors', function($query) use ($value) {
+                $query->whereHas('ged_element.workspace_coordonnees', function($query) use ($value) {
+                    $query->where('ged_workspace_coordonnee.id', $value);
+                }); 
+            });
+        }
+    }
+
     public function filterDossierAdministratifs(myBuilder $query, $method, $clauseOperator, $value, $in)
     {
         if ($value) {

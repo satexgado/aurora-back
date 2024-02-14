@@ -108,6 +108,20 @@ class GedElement extends Eloquent
 					->withTimestamps();
 	}
 
+	public function workspace_users()
+	{
+		return $this->belongsToMany(\App\Models\Ged\GedWorkspaceUser::class, 'ged_element_workspace_users', 'element', 'workspace_users')
+					->withPivot('id', 'inscription', 'deleted_at')
+					->withTimestamps();
+	}
+
+	public function workspace_coordonnees()
+	{
+		return $this->belongsToMany(\App\Models\Ged\GedWorkspaceCoordonnee::class, 'ged_element_workspace_coordonnees', 'element', 'workspace_coordonnees')
+					->withPivot('id', 'inscription', 'deleted_at')
+					->withTimestamps();
+	}
+
 	public function ged_favoris()
 	{
 		return $this->hasMany(\App\Models\Ged\GedFavori::class, 'element');

@@ -44,6 +44,16 @@ class CrCoordonneeController extends LaravelController
         }
     }
 
+    public function filterWorkspacesId(myBuilder $query, $method, $clauseOperator, $value)
+    {
+        if ($value) {
+            $ids = explode(",", $value);
+             $query->whereHas('ged_workspaces', function($query) use ($ids) {
+                $query->whereIn('ged_workspace_coordonnee.workpsace_id', $ids);
+            });
+        }
+    }
+
     public function filterGroupesId(myBuilder $query, $method, $clauseOperator, $value)
     {
         if ($value) {

@@ -71,6 +71,58 @@ class GedWorkspaceCoordonneeController extends LaravelController
         ->json($item);
     }
 
+    public function multistore(Request $request)
+    {
+
+        DB::beginTransaction();
+        $result = array();
+
+        try { 
+            
+            if($request->exists('removedCoordonnees'))
+            {
+                // $json = utf8_encode($request->removedPartages);
+                // $data = json_decode($json);
+                if(is_array($request->removedCoordonnees)){
+                    foreach($request->removedCoordonnees as $element) {
+                        $remove = GedWorkspaceCoordonnee::find($element);
+                        if($remove) {
+                            $remove->delete();
+                        }
+                    }
+                }
+            }
+
+            if($request->exists('coordonnees'))
+            {
+                // $json = utf8_encode($request->coordonnees);
+                // $data = json_decode($json);
+                if(is_array($request->coordonnees)){
+                    foreach($request->coordonnees as $element) {
+                        $item = GedWorkspaceCoordonnee::updateOrCreate([
+                            'workspace_id' => $element['workspace_id'],
+                            'coordonnee_id' => $element['coordonnee_id']
+                        ],[
+                            'inscription_id' => Auth::id(),
+                            'coordonnee_id' => $element['coordonnee_id'],
+                            'groupe_id' => $element['groupe_id']??null,
+                            'workspace_id' => $element['workspace_id']
+                        ]);
+                        $result[] = $item->load('cr_coordonnee');
+                    }
+                }
+            }
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollback();
+            throw $e;
+        }
+
+        return response()
+        ->json($result);
+    }
+
     public function update(Request $request, $id)
     {
 

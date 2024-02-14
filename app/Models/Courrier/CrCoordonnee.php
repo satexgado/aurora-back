@@ -76,4 +76,14 @@ class CrCoordonnee extends Eloquent
 	{
 		return $this->hasMany(\App\Models\Courrier\CrDestinataire::class, 'coordonnee_id');
 	}
+
+	public function ged_workspace_coordonnees()
+	{
+		return $this->hasMany(\App\Models\Ged\GedWorkspaceCoordonnee::class, 'coordonnee_id');
+	}
+
+	public function ged_workspaces()
+    {
+        return $this->belongsToMany(\App\Models\Ged\GedWorkspace::class, 'ged_workspace_coordonnee', 'coordonnee_id', 'workspace_id');
+    }
 }

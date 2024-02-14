@@ -7,6 +7,8 @@ use App\Http\Controllers\CourrierController;
 use App\Http\Controllers\Ged\DossierController;
 use App\Http\Controllers\Ged\FichierController;
 use App\Http\Controllers\Ged\GedPartageController;
+use App\Http\Controllers\Ged\GedWorkspaceCoordonneeController;
+use App\Http\Controllers\Ged\GedWorkspaceUserController;
 use App\Http\Controllers\InscriptionController;
 use App\Http\Controllers\Messagerie\DiscussionController;
 use App\Http\Controllers\Messagerie\ReactionController;
@@ -61,6 +63,17 @@ Route::get('user/{user}/email/resend', 'VerificationController@resend')->name('e
 
 Route::middleware('auth:sanctum')->group(function () {
 
+    /*
+     calendrier
+    */
+    Route::prefix('calendrier')->group(function() {
+        Route::customResources([
+            'calendriers' => 'Calendrier\CalendrierController',
+            'type-calendriers' => 'Calendrier\TypeCalendrierController',
+            'groupe-calendriers' => 'Calendrier\GroupeCalendrierController',
+        ]);
+    });
+
     Route::customResource('saved-states', 'SavedStateController');
 
     Route::get('form-dependancies/entrant', [FormDependanciesController::class, 'entrant']);
@@ -113,6 +126,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::customResource('ged-partages', 'Ged\GedPartageController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('ged-dossier-administratifs', 'Ged\GedDossierAdministratifController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('ged-workspaces', 'Ged\GedWorkspaceController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
+    Route::post('ged-workspace-users/multi', [GedWorkspaceUserController::class, 'multistore'])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
+    Route::post('ged-workspace-coordonnees/multi', [GedWorkspaceCoordonneeController::class, 'multistore'])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('ged-workspace-coordonnees', 'Ged\GedWorkspaceCoordonneeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('ged-workspace-users', 'Ged\GedWorkspaceUserController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");
     Route::customResource('ged-workspace-groupes', 'Ged\GedWorkspaceGroupeController', ['except' => ['getAll']])->Middleware("ability:ADMIN:ADMIN,courrier-entrant:ECRITURE");

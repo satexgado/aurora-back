@@ -68,8 +68,62 @@ class GedWorkspaceUserController extends LaravelController
         ]);
 
         return response()
-        ->json($item);
+        ->json($item->load('personne_inscription'));
     }
+
+    public function multistore(Request $request)
+    {
+
+        DB::beginTransaction();
+        $result = array();
+
+        try { 
+            
+            if($request->exists('removedUsers'))
+            {
+                // $json = utf8_encode($request->removedPartages);
+                // $data = json_decode($json);
+                if(is_array($request->removedUsers)){
+                    foreach($request->removedUsers as $element) {
+                        $remove = GedWorkspaceUser::find($element);
+                        if($remove) {
+                            $remove->delete();
+                        }
+                    }
+                }
+            }
+
+            if($request->exists('users'))
+            {
+                // $json = utf8_encode($request->users);
+                // $data = json_decode($json);
+                if(is_array($request->users)){
+                    foreach($request->users as $element) {
+                        $item = GedWorkspaceUser::updateOrCreate([
+                            'workspace_id' => $element['workspace_id'],
+                            'personne_id' => $element['personne_id']
+                        ],[
+                            'inscription_id' => Auth::id(),
+                            'personne_id' => $element['personne_id'],
+                            'groupe_id' => $element['groupe_id']??null,
+                            'workspace_id' => $element['workspace_id']
+                        ]);
+
+                        $result[] = $item->load('personne_inscription');
+                    }
+                }
+            }
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollback();
+            throw $e;
+        }
+
+        return response()
+        ->json($result);
+    }
+
 
     public function update(Request $request, $id)
     {
@@ -81,7 +135,7 @@ class GedWorkspaceUserController extends LaravelController
         $item->fill($data)->save();
 
         return response()
-        ->json($item);
+        ->json($item->load('personne_inscription'));
     }
 
     public function destroy($id)
