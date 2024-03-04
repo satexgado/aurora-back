@@ -110,12 +110,16 @@ class FichierController extends LaravelController
         }
     }
 
-    public function filterWorkspaceCoordonnees(myBuilder $query, $method, $clauseOperator, $value, $in)
+    public function filterCoordonneeLinkedWorkspaces(myBuilder $query, $method, $clauseOperator, $value, $in)
     {
-        if ($value) {
-            $query->whereHas('ged_element.workspace_coordonnees', function($query) use ($value) {
-                $query->where('ged_workspace_coordonnee.id', $value);
-            });
+        if ($value && is_array($value)) {
+            foreach($value as $key2=>$value2)
+            {
+                $query->whereHas('ged_element.coordonnee_linked_workspaces', function($query) use ($key2,$value2) {
+                    $query->where('ged_element_workspace_coordonnee.coordonnee', $key2);
+                    $query->where('ged_element_workspace_coordonnee.workspace', $value2['workspace']);
+                });
+            }
         }
     }
 
@@ -388,19 +392,42 @@ class FichierController extends LaravelController
                 'type_id' => $file->id,
                 'fichier' => $path,
             ]);
-
             $element = new GedElement();
             $item->ged_element()->save($element);
             if($request->has('relation_name') && $request->has('relation_id')) {
-                $relation_name = $request->relation_name;
-                $relation_id = $request->relation_id;
-                $item->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
+                $relation_name = $request->relation_name;                
+                $json = utf8_encode($request->relation_id);
+                $decoded = json_decode($json, true);
+
+                if(is_object($decoded)) {
+                    $decoded = get_object_vars($decoded);
+                }
+                if (is_array($decoded)) {
+                    foreach($decoded as $key2=>$value2){
+                        $value2['inscription_id']= Auth::id();
+                        $item->{$relation_name}()->syncWithoutDetaching([$key2 => $value2]);
+                    }
+                } else {
+                    $relation_id = $request->relation_id;
+                    $item->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
+                }
             }
 
             if($request->has('gedRelation_name') && $request->has('gedRelation_id')) {
                 $gedRelation_name = $request->gedRelation_name;
-                $gedRelation_id = $request->gedRelation_id;
-                $item->ged_element->{$gedRelation_name}()->syncWithoutDetaching([$gedRelation_id => ['inscription_id'=> Auth::id()]]);
+                $json = utf8_encode($request->gedRelation_id);
+                $decoded = json_decode($json, true);
+                if(is_object($decoded)) {
+                    $decoded = get_object_vars($decoded);
+                }
+                if (is_array($decoded)) {
+                    foreach($decoded as $key2=>$value2){
+                        $value2['inscription_id']= Auth::id();
+                        $item->ged_element->{$gedRelation_name}()->syncWithoutDetaching([$key2 => $value2]);                                }
+                } else {
+                    $gedRelation_id = $request->gedRelation_id;
+                    $item->ged_element->{$gedRelation_name}()->syncWithoutDetaching([$gedRelation_id => ['inscription_id'=> Auth::id()]]);
+                }   
             }
         DB::commit();
         } catch (\Throwable $e) {
@@ -438,13 +465,39 @@ class FichierController extends LaravelController
 
                         if($request->has('relation_name') && $request->has('relation_id')) {
                             $relation_name = $request->relation_name;
-                            $relation_id = $request->relation_id;
-                            $fichier->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
+                            $json = utf8_encode($request->relation_id);
+                            $decoded = json_decode($json, true);
+
+                            if(is_object($decoded)) {
+                                $decoded = get_object_vars($decoded);
+                            }
+                            if (is_array($decoded)) {
+                                foreach($decoded as $key2=>$value2){
+                                    $value2['inscription_id']= Auth::id();
+                                    $fichier->{$relation_name}()->syncWithoutDetaching([$key2 => $value2]);
+                                }
+                            } else {
+                                $relation_id = $request->relation_id;
+                                $fichier->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
+                            }
                         }
+
                         if($request->has('gedRelation_name') && $request->has('gedRelation_id')) {
                             $gedRelation_name = $request->gedRelation_name;
-                            $gedRelation_id = $request->gedRelation_id;
-                            $fichier->ged_element->{$gedRelation_name}()->syncWithoutDetaching([$gedRelation_id => ['inscription_id'=> Auth::id()]]);
+                            $json = utf8_encode($request->gedRelation_id);
+                            $decoded = json_decode($json, true);
+                            var_dump($decoded);
+                            if(is_object($decoded)) {
+                                $decoded = get_object_vars($decoded);
+                            }
+                            if (is_array($decoded)) {
+                                foreach($decoded as $key2=>$value2){
+                                    $value2['inscription_id']= Auth::id();
+                                    $fichier->ged_element->{$gedRelation_name}()->syncWithoutDetaching([$key2 => $value2]);                                }
+                            } else {
+                                $gedRelation_id = $request->gedRelation_id;
+                                $fichier->ged_element->{$gedRelation_name}()->syncWithoutDetaching([$gedRelation_id => ['inscription_id'=> Auth::id()]]);
+                            }   
                         }
                     
                     }

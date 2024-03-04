@@ -117,6 +117,25 @@ class DossierController extends LaravelController
         }
     }
 
+    public function filterCoordonneeLinkedWorkspaces(myBuilder $query, $method, $clauseOperator, $value, $in)
+    {
+        if ($value && is_array($value)) {
+            foreach($value as $key2=>$value2)
+            {
+                $query->whereHas('ged_element.coordonnee_linked_workspaces', function($query) use ($key2,$value2) {
+                    $query->where('ged_element_workspace_coordonnee.coordonnee', $key2);
+                    $query->where('ged_element_workspace_coordonnee.workspace', $value2['workspace']);
+                });
+                $query->orWhereHas('ancestors', function($query) use ($key2,$value2) {
+                    $query->whereHas('ged_element.coordonnee_linked_workspaces', function($query) use ($key2,$value2) {
+                        $query->where('ged_element_workspace_coordonnee.coordonnee', $key2);
+                        $query->where('ged_element_workspace_coordonnee.workspace', $value2['workspace']);
+                    });
+                });
+            }
+        }
+    }
+
     public function filterDossierAdministratifs(myBuilder $query, $method, $clauseOperator, $value, $in)
     {
         if ($value) {
@@ -391,8 +410,22 @@ class DossierController extends LaravelController
 
             if($request->has('relation_name') && $request->has('relation_id')) {
                 $relation_name = $request->relation_name;
-                $relation_id = $request->relation_id;
-                $item->ged_element->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
+                $json = utf8_encode($request->relation_id);
+                $decoded = json_decode($json, true);
+
+                if(is_object($decoded)) {
+                    $decoded = get_object_vars($decoded);
+                }
+                
+                if (is_array($decoded)) {
+                    foreach($decoded as $key2=>$value2){
+                        $value2['inscription_id']= Auth::id();
+                        $item->ged_element->{$relation_name}()->syncWithoutDetaching([$key2 => $value2]);
+                    }
+                } else {
+                    $relation_id = $request->relation_id;
+                    $item->ged_element->{$relation_name}()->syncWithoutDetaching([$relation_id => ['inscription_id'=> Auth::id()]]);
+                }
             }
 
             DB::commit();

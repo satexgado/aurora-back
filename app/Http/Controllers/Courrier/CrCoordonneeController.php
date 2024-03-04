@@ -49,7 +49,7 @@ class CrCoordonneeController extends LaravelController
         if ($value) {
             $ids = explode(",", $value);
              $query->whereHas('ged_workspaces', function($query) use ($ids) {
-                $query->whereIn('ged_workspace_coordonnee.workpsace_id', $ids);
+                $query->whereIn('ged_workspace_coordonnee.workspace_id', $ids);
             });
         }
     }

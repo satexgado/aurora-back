@@ -115,10 +115,10 @@ class GedElement extends Eloquent
 					->withTimestamps();
 	}
 
-	public function workspace_coordonnees()
+	public function coordonnee_linked_workspaces()
 	{
-		return $this->belongsToMany(\App\Models\Ged\GedWorkspaceCoordonnee::class, 'ged_element_workspace_coordonnees', 'element', 'workspace_coordonnees')
-					->withPivot('id', 'inscription', 'deleted_at')
+		return $this->belongsToMany(\App\Models\Courrier\CrCoordonnee::class, 'ged_element_workspace_coordonnee', 'element', 'coordonnee')
+					->withPivot('id', 'inscription', 'deleted_at', 'workspace')
 					->withTimestamps();
 	}
 
