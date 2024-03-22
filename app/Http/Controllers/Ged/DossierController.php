@@ -445,6 +445,7 @@ class DossierController extends LaravelController
         if($request->has('dossier_id')) {
             if(!$request->dossier_id) {
                 $request->merge(['dossier_id' => null]);
+                $item->ged_element()->first()->structures()->sync([]);
             } else if(str_contains(strval($request->dossier_id), 'structure')) {
               $idStructure =  str_replace('structure', '', $request->dossier_id);
               $item->ged_element()->first()->structures()->sync([$idStructure => ['inscription_id'=> Auth::id()]]);
